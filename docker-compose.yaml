@@ -1,0 +1,43 @@
+services:
+  tor:
+    build:
+      context: ./tor
+      args:
+        BLESK_TOR_VERSION:
+        BLESK_TOR_USERNAME:
+        BLESK_TOR_UID:
+        BLESK_TOR_GID:
+        BLESK_TOR_HOME:
+        BLESK_TOR_ONIONS:
+    restart: always
+    stop_grace_period: 1m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    env_file:
+      - ./.env
+    volumes:
+      - data-tor:${BLESK_TOR_HOME}
+    networks:
+      internal:
+        ipv6_address: ${BLESK_TOR_IPV6}
+        ipv4_address: ${BLESK_TOR_IPV4}
+    expose:
+      - ${BLESK_TOR_PORT_SOCKS}
+      - ${BLESK_TOR_PORT_CONTROL}
+
+volumes:
+  data-tor:
+
+networks:
+  internal:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+    ipam:
+      driver: default
+      config:
+        - subnet: ${BLESK_NET_INTERNAL_IPV6}
+        - subnet: ${BLESK_NET_INTERNAL_IPV4}
