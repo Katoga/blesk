@@ -59,10 +59,35 @@ services:
       - ${BLESK_BITCOINCORE_PORT_ZMQ_TX}
     depends_on:
       - tor
+  electrs:
+    build:
+      context: ./electrs
+      args:
+        BLESK_ELECTRS_VERSION:
+        BLESK_ELECTRS_USERNAME:
+        BLESK_ELECTRS_UID:
+        BLESK_ELECTRS_GID:
+        BLESK_ELECTRS_HOME:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    volumes:
+      - data-electrs:${BLESK_ELECTRS_HOME}
+    networks:
+      internal:
+        ipv6_address: ${BLESK_ELECTRS_IPV6}
+        ipv4_address: ${BLESK_ELECTRS_IPV4}
+    expose:
+      - ${BLESK_ELECTRS_PORT}
+    depends_on:
+      - bitcoincore
 
 volumes:
   data-tor:
   data-bitcoincore:
+  data-electrs:
 
 networks:
   internal:

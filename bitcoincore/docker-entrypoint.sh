@@ -35,6 +35,9 @@ bitcoind_options=(
   # RPi optimizations
   -maxconnections="$BLESK_BITCOINCORE_MAX_CONNECTIONS"
   -maxuploadtarget="$BLESK_BITCOINCORE_MAX_UPLOAD_TARGET"
+
+  # DoS defence avoidance, e.g. for initial sync of Electrs
+  -whitelist="$BLESK_NET_INTERNAL_IPV6"
 )
 if [[ "${BLESK_BITCOINCORE_INITIAL_RUN:-0}" -eq 1 ]]; then
   # Initial block download optimizations

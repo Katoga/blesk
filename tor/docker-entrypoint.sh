@@ -24,6 +24,12 @@ tor_options=(
   --HiddenServiceVersion 3
   --HiddenServicePort "${BLESK_BITCOINCORE_PORT_P2P} [${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_P2P}"
   --HiddenServiceDirGroupReadable 1
+
+  # electrs
+  --HiddenServiceDir "${BLESK_TOR_ONIONS}/${BLESK_ELECTRS_USERNAME}"
+  --HiddenServiceVersion 3
+  --HiddenServicePort "${BLESK_ELECTRS_PORT} [${BLESK_ELECTRS_IPV6}]:${BLESK_ELECTRS_PORT}"
+  --HiddenServiceDirGroupReadable 1
 )
 
 exec tor "${tor_options[@]}"
