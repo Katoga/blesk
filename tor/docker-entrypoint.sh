@@ -18,6 +18,12 @@ tor_options=(
   --CookieAuthentication 1
 
   --ControlPort "$BLESK_TOR_PORT_CONTROL"
+
+  # bitcoincore
+  --HiddenServiceDir "${BLESK_TOR_ONIONS}/${BLESK_BITCOINCORE_USERNAME}"
+  --HiddenServiceVersion 3
+  --HiddenServicePort "${BLESK_BITCOINCORE_PORT_P2P} [${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_P2P}"
+  --HiddenServiceDirGroupReadable 1
 )
 
 exec tor "${tor_options[@]}"

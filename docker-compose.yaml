@@ -11,7 +11,7 @@ services:
         BLESK_TOR_ONIONS:
     restart: always
     stop_grace_period: 1m
-    logging:
+    logging: &logging
       driver: "json-file"
       options:
         max-size: "20m"
@@ -27,9 +27,42 @@ services:
     expose:
       - ${BLESK_TOR_PORT_SOCKS}
       - ${BLESK_TOR_PORT_CONTROL}
+  bitcoincore:
+    build:
+      context: ./bitcoincore
+      args:
+        BLESK_BITCOINCORE_VERSION:
+        BLESK_BITCOINCORE_USERNAME:
+        BLESK_BITCOINCORE_UID:
+        BLESK_BITCOINCORE_GID:
+        BLESK_BITCOINCORE_HOME:
+        BLESK_BITCOINCORE_RPC_USER:
+        BLESK_BITCOINCORE_RPC_PASSWORD:
+        BLESK_TOR_USERNAME:
+        BLESK_TOR_GID:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    volumes:
+      - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
+      - data-tor:${BLESK_TOR_HOME}
+    networks:
+      internal:
+        ipv6_address: ${BLESK_BITCOINCORE_IPV6}
+        ipv4_address: ${BLESK_BITCOINCORE_IPV4}
+    expose:
+      - ${BLESK_BITCOINCORE_PORT_RPC}
+      - ${BLESK_BITCOINCORE_PORT_P2P}
+      - ${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}
+      - ${BLESK_BITCOINCORE_PORT_ZMQ_TX}
+    depends_on:
+      - tor
 
 volumes:
   data-tor:
+  data-bitcoincore:
 
 networks:
   internal:
