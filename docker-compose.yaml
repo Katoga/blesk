@@ -83,6 +83,30 @@ services:
       - ${BLESK_ELECTRS_PORT}
     depends_on:
       - bitcoincore
+  explorer:
+    build:
+      context: ./explorer
+      args:
+        BLESK_EXPLORER_VERSION:
+        BLESK_EXPLORER_CHECKSUM:
+        BLESK_EXPLORER_USERNAME:
+        BLESK_EXPLORER_UID:
+        BLESK_EXPLORER_GID:
+        BLESK_EXPLORER_HOME:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    networks:
+      internal:
+        ipv6_address: ${BLESK_EXPLORER_IPV6}
+        ipv4_address: ${BLESK_EXPLORER_IPV4}
+    expose:
+      - ${BLESK_EXPLORER_PORT}
+    depends_on:
+      - bitcoincore
+      - electrs
 
 volumes:
   data-tor:

@@ -13,9 +13,11 @@ docker compose up
 - [TOR]
 - [Bitcoin Core]
 - [Electrs]
+- [BTC RPC Explorer]
 
 [Ligntning Network]: https://en.wikipedia.org/wiki/Lightning_Network
 [Docker Compose]: https://docs.docker.com/compose/
 [TOR]: https://www.torproject.org/
 [Bitcoin Core]: https://bitcoincore.org/
 [Electrs]: https://github.com/romanz/electrs
+[BTC RPC Explorer]: https://github.com/Dojo-Open-Source-Project/btc-rpc-explorer
