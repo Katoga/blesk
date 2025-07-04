@@ -107,11 +107,33 @@ services:
     depends_on:
       - bitcoincore
       - electrs
+  mariadb:
+    build:
+      context: ./mariadb
+      args:
+        BLESK_DOJO_VERSION:
+        BLESK_MARIADB_SCRIPTS_CHECKSUM_1:
+        BLESK_MARIADB_SCRIPTS_CHECKSUM_2:
+        BLESK_MARIADB_VERSION:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    volumes:
+      - data-mariadb:/var/lib/mysql
+    networks:
+      internal:
+        ipv6_address: ${BLESK_MARIADB_IPV6}
+        ipv4_address: ${BLESK_MARIADB_IPV4}
+    expose:
+      - ${BLESK_MARIADB_PORT}
 
 volumes:
   data-tor:
   data-bitcoincore:
   data-electrs:
+  data-mariadb:
 
 networks:
   internal:
