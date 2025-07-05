@@ -14,6 +14,7 @@ docker compose up
 - [Bitcoin Core]
 - [Electrs]
 - [BTC RPC Explorer]
+- [Samourai Dojo]
 
 [Ligntning Network]: https://en.wikipedia.org/wiki/Lightning_Network
 [Docker Compose]: https://docs.docker.com/compose/
@@ -21,3 +22,4 @@ docker compose up
 [Bitcoin Core]: https://bitcoincore.org/
 [Electrs]: https://github.com/romanz/electrs
 [BTC RPC Explorer]: https://github.com/Dojo-Open-Source-Project/btc-rpc-explorer
+[Samourai Dojo]: https://github.com/Dojo-Open-Source-Project/samourai-dojo

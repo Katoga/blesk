@@ -36,6 +36,12 @@ tor_options=(
   --HiddenServiceVersion 3
   --HiddenServicePort "80 [${BLESK_EXPLORER_IPV6}]:${BLESK_EXPLORER_PORT}"
   --HiddenServiceDirGroupReadable 1
+
+  # dojo
+  --HiddenServiceDir "${BLESK_TOR_ONIONS}/${BLESK_DOJO_USERNAME}"
+  --HiddenServiceVersion 3
+  --HiddenServicePort "80 [${BLESK_NGINX_IPV6}]:${BLESK_NGINX_PORT}"
+  --HiddenServiceDirGroupReadable 1
 )
 
 exec tor "${tor_options[@]}"

@@ -128,6 +128,37 @@ services:
         ipv4_address: ${BLESK_MARIADB_IPV4}
     expose:
       - ${BLESK_MARIADB_PORT}
+  dojo:
+    build:
+      context: ./dojo
+      args:
+        BLESK_DOJO_VERSION:
+        BLESK_DOJO_USERNAME:
+        BLESK_DOJO_UID:
+        BLESK_DOJO_GID:
+        BLESK_DOJO_HOME:
+        BLESK_TOR_USERNAME:
+        BLESK_TOR_GID:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    volumes:
+      - data-tor:${BLESK_TOR_HOME}
+    networks:
+      internal:
+        ipv6_address: ${BLESK_DOJO_IPV6}
+        ipv4_address: ${BLESK_DOJO_IPV4}
+    expose:
+      - ${BLESK_DOJO_PORT_API}
+      - ${BLESK_DOJO_PORT_PUSHTX}
+      - ${BLESK_DOJO_PORT_TRACKER}
+    depends_on:
+      - tor
+      - bitcoincore
+      - electrs
+      - mariadb
 
 volumes:
   data-tor:
