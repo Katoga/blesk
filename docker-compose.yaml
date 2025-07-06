@@ -159,6 +159,22 @@ services:
       - bitcoincore
       - electrs
       - mariadb
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        NGINX_ENVSUBST_OUTPUT_DIR:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    networks:
+      internal:
+        ipv6_address: ${BLESK_NGINX_IPV6}
+        ipv4_address: ${BLESK_NGINX_IPV4}
+    expose:
+      - ${BLESK_NGINX_PORT}
 
 volumes:
   data-tor:
