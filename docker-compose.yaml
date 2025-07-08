@@ -168,12 +168,42 @@ services:
         ipv6_address: ${BLESK_NGINX_IPV6}
     expose:
       - ${BLESK_NGINX_PORT}
+  lnd:
+    build:
+      context: ./lnd
+      args:
+        BLESK_LND_VERSION:
+        BLESK_LND_SIGNATURES:
+        BLESK_LND_USERNAME:
+        BLESK_LND_UID:
+        BLESK_LND_GID:
+        BLESK_TOR_USERNAME:
+        BLESK_TOR_GID:
+    restart: always
+    stop_grace_period: 1m
+    logging: *logging
+    env_file:
+      - ./.env
+    volumes:
+      - data-lnd:/home/${BLESK_LND_USERNAME}/.lnd
+      - data-tor:${BLESK_TOR_HOME}:ro
+    networks:
+      internal:
+        ipv6_address: ${BLESK_LND_IPV6}
+    expose:
+      - ${BLESK_LND_PORT_P2P}
+      - ${BLESK_LND_PORT_RPC}
+      - ${BLESK_LND_PORT_REST}
+    depends_on:
+      - tor
+      - bitcoincore
 
 volumes:
   data-tor:
   data-bitcoincore:
   data-electrs:
   data-mariadb:
+  data-lnd:
 
 networks:
   internal:
