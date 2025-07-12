@@ -180,6 +180,7 @@ services:
         BLESK_LND_PORT_P2P:
         BLESK_LND_PORT_RPC:
         BLESK_LND_PORT_REST:
+        BLESK_LNDINIT_VERSION:
         BLESK_TOR_USERNAME:
         BLESK_TOR_GID:
         BLESK_BITCOINCORE_USERNAME:
@@ -190,7 +191,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - data-lnd:/home/${BLESK_LND_USERNAME}/.lnd
+      - data-lnd:${BLESK_LND_HOME}/.lnd
       - data-tor:${BLESK_TOR_HOME}:ro
       - data-bitcoincore:${BLESK_LND_HOME}/.bitcoin:ro
     networks:

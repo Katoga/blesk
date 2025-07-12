@@ -1,4 +1,4 @@
-FROM alpine:3 AS builder
+FROM alpine:3 AS builder-lnd
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -27,8 +27,41 @@ RUN arch="${TARGETPLATFORM##linux/}" \
     done \
   && grep "$tarball" "$checksums_file" \
     | sha256sum -csw - \
-  && tar -xvzf "$tarball" \
-  && mv "lnd-linux-${arch}-v${BLESK_LND_VERSION}-beta/lnd" "lnd-linux-${arch}-v${BLESK_LND_VERSION}-beta/lncli" /usr/local/bin/
+  && tar -xvz \
+    --strip-components 1 \
+    -f "$tarball" \
+  && mv ./lnd ./lncli /usr/local/bin/
+
+
+FROM golang:1.25-alpine AS builder-lndinit
+
+# hadolint ignore=DL3018
+RUN apk --no-cache upgrade \
+  && apk --no-cache add \
+    bash \
+    build-base \
+    git \
+    gnupg
+
+SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
+
+WORKDIR /opt/lndinit
+
+ARG TARGETPLATFORM
+ARG BLESK_LNDINIT_VERSION
+
+RUN git clone \
+    --depth 1 \
+    --branch "v${BLESK_LNDINIT_VERSION}-beta" \
+    https://github.com/lightninglabs/lndinit . \
+  && wget -q -O - "https://github.com/web-flow.gpg" \
+    | gpg --import \
+  && git verify-commit "v${BLESK_LNDINIT_VERSION}-beta" \
+  && go get -u \
+  && go build \
+    -tags 'netgo' \
+    -ldflags "-w -s -linkmode 'external' -extldflags '-static'" \
+  && mv ./lndinit /usr/local/bin/
 
 
 FROM alpine:3 AS runner
@@ -70,7 +103,8 @@ RUN addgroup -S \
 USER "$BLESK_LND_USERNAME"
 WORKDIR "${BLESK_LND_HOME}"
 
-COPY --from=builder --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" /usr/local/bin/lnd /usr/local/bin/lncli /usr/local/bin/
+COPY --from=builder-lnd --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" /usr/local/bin/lnd /usr/local/bin/lncli /usr/local/bin/
+COPY --from=builder-lndinit --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" /usr/local/bin/lndinit /usr/local/bin/
 COPY --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" lnd.conf.template ./
 
 COPY docker-entrypoint.sh /usr/local/bin/

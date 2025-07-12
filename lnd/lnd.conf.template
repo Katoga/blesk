@@ -13,7 +13,7 @@ restlisten=[${BLESK_LND_IPV6}]:${BLESK_LND_PORT_REST}
 
 maxpendingchannels=5
 
-wallet-unlock-password-file=$password_file
+wallet-unlock-password-file=$blesk_lnd_wallet_password_file
 wallet-unlock-allow-create=true
 
 minchansize=100000

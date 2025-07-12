@@ -2,14 +2,72 @@
 
 set -euo pipefail
 
-readonly password_file="${BLESK_LND_HOME}/.lnd/password.txt"
-if [[ ! -f "$password_file" ]]; then
-  echo "${BLESK_LND_PASSWORD}" > "$password_file"
+# Mimic LND log message
+# BusyBox's date cannot print second's fraction
+log_with_date() {
+  local -r msg="$1"
+
+  echo "$(date --utc +'%Y-%m-%d %H:%M:%S') [INF] BLSK: ${msg}"
+}
+
+readonly blesk_lnd_wallet_password_file="${BLESK_LND_HOME}/.lnd/wallet_password.txt"
+if [[ ! -f "$blesk_lnd_wallet_password_file" ]]; then
+  log_with_date 'storing password'
+  lnd_password="${BLESK_LND_WALLET_PASSWORD:-}"
+  if ! [[ "${lnd_password:-}" ]]; then
+    log_with_date 'generating password'
+    lnd_password="$(lndinit gen-password)"
+  fi
+
+  echo "${lnd_password}" > "$blesk_lnd_wallet_password_file"
+  chmod 0600 "$blesk_lnd_wallet_password_file"
+  log_with_date 'password stored'
 fi
 
-export password_file
+init_wallet_seed_passphrase_arg=''
+gen_seed_passphrase_file_arg=''
+readonly blesk_lnd_seed_passphrase_file="${BLESK_LND_HOME}/.lnd/seed_passphrase.txt"
+if [[ ${BLESK_LND_SEED_PASSPHRASE:-} ]]; then
+  log_with_date 'will use seed passphrase'
+  init_wallet_seed_passphrase_arg="--file.seed-passphrase=${blesk_lnd_seed_passphrase_file}"
+  gen_seed_passphrase_file_arg="--passphrase-file=${blesk_lnd_seed_passphrase_file}"
+
+  if [[ ! -f "$blesk_lnd_seed_passphrase_file" ]]; then
+    log_with_date 'storing seed passphrase'
+    echo -n "${BLESK_LND_SEED_PASSPHRASE}" > "$blesk_lnd_seed_passphrase_file"
+    log_with_date 'seed passphrase stored'
+  fi
+
+  chmod 0600 "$blesk_lnd_seed_passphrase_file"
+fi
+
+readonly blesk_lnd_seed_file="${BLESK_LND_HOME}/.lnd/seed.txt"
+if [[ ! -f "$blesk_lnd_seed_file" ]]; then
+  log_with_date 'storing seed'
+  lnd_seed="${BLESK_LND_SEED:-}"
+  if ! [[ "${lnd_seed:-}" ]]; then
+    log_with_date 'generating seed'
+    lnd_seed="$(lndinit gen-seed ${gen_seed_passphrase_file_arg})"
+  fi
+
+  echo -n "${lnd_seed}" > "$blesk_lnd_seed_file"
+  chmod 0600 "$blesk_lnd_seed_file"
+  log_with_date 'seed stored'
+fi
+
+export blesk_lnd_wallet_password_file
 envsubst < "${BLESK_LND_HOME}/lnd.conf.template" > "${BLESK_LND_HOME}/.lnd/lnd.conf"
 chmod 0640 "${BLESK_LND_HOME}/.lnd/lnd.conf"
-export -n password_file
+export -n blesk_lnd_wallet_password_file
+
+lndinit init-wallet \
+  --file.seed="$blesk_lnd_seed_file" \
+  ${init_wallet_seed_passphrase_arg:-} \
+  --file.wallet-password="$blesk_lnd_wallet_password_file" \
+  --init-file.output-wallet-dir="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet" \
+  --init-file.validate-password
+
+log_with_date "Seed: '$(cat "$blesk_lnd_seed_file")'"
+shred -uz "$blesk_lnd_seed_file"
 
 exec lnd
