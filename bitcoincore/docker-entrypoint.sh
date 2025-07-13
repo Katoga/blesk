@@ -44,4 +44,72 @@ if [[ "${BLESK_BITCOINCORE_INITIAL_RUN:-0}" -eq 1 ]]; then
   )
 fi
 
+# Mimic Bitcoincore log message
+log_with_date() {
+  local -r msg="$1"
+
+  echo "$(date --utc +%FT%TZ) ${msg}"
+}
+
+# Taken from Samourai Dojo (GNU AGPL v3)
+# de-echo-ed for Blesk by Katoga
+ban_knots() {
+  log_with_date "Running ban script"
+
+  local addr base_addr id
+
+  # Get all Knots nodes
+  local -r all_knots=$(
+    bitcoin-cli \
+      --rpcconnect="$BLESK_BITCOINCORE_IPV6" \
+      --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
+      --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
+      --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
+      getpeerinfo \
+    | \
+    jq --raw-output \
+      '.[] | select(.subver | contains("Knots")) | {addr: .addr, id: .id}'
+  )
+
+  if [[ "$all_knots" ]]; then
+    # Iterate over all Knots nodes
+    while read -r node; do
+      addr=$(<<< "$node" jq -r '.addr')
+      id=$(<<< "$node" jq -r '.id')
+      base_addr=$(<<< "$addr" cut -d: -f1)
+
+      if [[ "$addr" == *"$BLESK_TOR_IPV6"* ]]; then
+        log_with_date "Disconnecting node with addr: ${addr}"
+        bitcoin-cli \
+          --rpcconnect="$BLESK_BITCOINCORE_IPV6" \
+          --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
+          --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
+          --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
+          disconnectnode "" "$id"
+      else
+        log_with_date "Banning node with addr: ${addr}"
+        bitcoin-cli \
+          --rpcconnect="$BLESK_BITCOINCORE_IPV6" \
+          --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
+          --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
+          --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
+          setban "$base_addr" "add" 1893456000 true
+      fi
+    done <<< "$(<<< "$all_knots" jq -c '.')"
+  else
+    log_with_date 'No Knots connected'
+  fi
+
+  log_with_date 'Ban script finished'
+}
+
+log_with_date 'Starting ban script background process'
+
+(
+  while true; do
+    sleep 600
+    ban_knots
+  done
+) &
+
 exec bitcoind "${bitcoind_options[@]}"

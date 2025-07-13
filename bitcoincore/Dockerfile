@@ -47,8 +47,11 @@ RUN go build -o ./ -tags 'netgo' ./rpcauth.go
 
 FROM debian:bookworm-slim AS runner
 
+# hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get upgrade --assume-yes --no-install-recommends \
+  && apt-get install --assume-yes --no-install-recommends \
+    jq \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
