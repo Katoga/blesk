@@ -30,7 +30,7 @@ RUN ( \
     || wget -nv \
       --timeout=10 \
       --tries=2 \
-      "https://tor.calyxinstitute.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz" \
+      "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz" \
     || exit 10 \
   ) \
   && ( \
@@ -41,7 +41,7 @@ RUN ( \
     || wget -nv \
       --timeout=10 \
       --tries=2 \
-      "https://tor.calyxinstitute.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
+      "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
     || wget -nv \
       --timeout=10 \
       --tries=2 \
@@ -52,7 +52,7 @@ RUN ( \
     wget -nv \
       --timeout=10 \
       --tries=2 \
-      "https://tor.calyxinstitute.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
+      "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
     || wget -nv \
       --timeout=10 \
       --tries=2 \
