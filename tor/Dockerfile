@@ -63,15 +63,12 @@ RUN ( \
       "https://tor.eff.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
     || exit 30 \
   ) \
-  && gpg --batch \
-    --keyserver hkps://keyserver.ubuntu.com:443 \
-    --recv-keys \
-      0xEB5A896A28988BF5 \
-      0xC218525819F78451 \
-      0x21194EBB165733EA \
-      0x6AFEE6D49E92B601 \
-      B74417EDDF22AC9F9E90F49142E86A2A11F48D36 \
-      514102454D0A87DB0767A1EBBE6A0531C18A9179 \
+  && gpg --auto-key-locate nodefault,wkd --locate-keys ahf@torproject.org \
+  && gpg --list-key  514102454D0A87DB0767A1EBBE6A0531C18A9179 \
+  && gpg --auto-key-locate nodefault,wkd --locate-keys dgoulet@torproject.org \
+  && gpg --list-key  B74417EDDF22AC9F9E90F49142E86A2A11F48D36 \
+  && gpg --auto-key-locate nodefault,wkd --locate-keys nickm@torproject.org \
+  && gpg --list-key  2133BC600AB133E1D826D173FE43009C4607B1FB \
   && gpg --verify "tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
   && sha256sum -c "tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
   && tar -xvz \
