@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim AS builder-bitcoincore
+FROM debian:trixie-slim AS builder-bitcoincore
 
 ARG BLESK_BITCOINCORE_VERSION
 
@@ -45,7 +45,7 @@ COPY rpcauth.go ./
 RUN go build -o ./ -tags 'netgo' ./rpcauth.go
 
 
-FROM debian:bookworm-slim AS runner
+FROM debian:trixie-slim AS runner
 
 # hadolint ignore=DL3008
 RUN apt-get update \
