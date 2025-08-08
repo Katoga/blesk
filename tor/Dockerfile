@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim AS builder
+FROM debian:trixie-slim AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -82,7 +82,7 @@ RUN ( \
   && make install
 
 
-FROM debian:bookworm-slim AS runner
+FROM debian:trixie-slim AS runner
 
 ENV DEBIAN_FRONTEND=noninteractive
 
