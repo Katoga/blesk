@@ -1,4 +1,4 @@
-FROM rust:1.88-slim-trixie AS builder
+FROM rust:1.89-slim-trixie AS builder
 
 ARG BLESK_ELECTRS_VERSION
 
