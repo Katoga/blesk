@@ -1,4 +1,4 @@
-FROM rust:1.88-slim-bookworm AS builder
+FROM rust:1.88-slim-trixie AS builder
 
 ARG BLESK_ELECTRS_VERSION
 
@@ -28,7 +28,7 @@ RUN apt-get update \
   && cargo build --locked --release
 
 
-FROM debian:bookworm-slim AS runner
+FROM debian:trixie-slim AS runner
 
 RUN apt-get update \
   && apt-get upgrade --assume-yes --no-install-recommends \
