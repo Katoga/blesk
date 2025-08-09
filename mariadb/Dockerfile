@@ -1,6 +1,6 @@
 ARG BLESK_MARIADB_VERSION=11
 
-FROM debian:bookworm-slim AS builder
+FROM debian:trixie-slim AS builder
 
 # hadolint ignore=DL3008
 RUN apt-get update \
