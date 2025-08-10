@@ -1,65 +1,51 @@
-FROM debian:trixie-slim AS builder
+FROM alpine:3 AS builder
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# hadolint ignore=DL3008
-RUN apt-get update \
-  && apt-get upgrade --assume-yes \
-  && apt-get install --assume-yes --no-install-recommends \
-    build-essential \
-    ca-certificates \
+# hadolint ignore=DL3018
+RUN apk --no-cache upgrade \
+  && apk --no-cache add \
+    build-base \
     gnupg \
     libevent-dev \
-    libssl-dev \
-    libzip-dev \
-    wget
+    openssl-dev \
+    zlib-dev
 
 WORKDIR /opt/tor
 
 ARG BLESK_TOR_VERSION
 
 RUN ( \
-    wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    wget -q \
+      -T 10 \
       "https://dist.torproject.org/tor-${BLESK_TOR_VERSION}.tar.gz" \
-    || wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    || wget -q \
+      -T 10 \
       "https://tor.eff.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz" \
-    || wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    || wget -q \
+      -T 10 \
       "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz" \
     || exit 10 \
   ) \
   && ( \
-    wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    wget -q \
+      -T 10 \
       "https://tor.eff.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
-    || wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    || wget -q \
+      -T 10 \
       "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
-    || wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    || wget -q \
+      -T 10 \
       "https://dist.torproject.org/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
     || exit 20 \
   ) \
   && ( \
-    wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    wget -q \
+      -T 10 \
       "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
-    || wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    || wget -q \
+      -T 10 \
       "https://dist.torproject.org/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
-    || wget -nv \
-      --timeout=10 \
-      --tries=2 \
+    || wget -q \
+      -T 10 \
       "https://tor.eff.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
     || exit 30 \
   ) \
@@ -82,18 +68,13 @@ RUN ( \
   && make install
 
 
-FROM debian:trixie-slim AS runner
+FROM alpine:3 AS runner
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-# hadolint ignore=DL3008
-RUN apt-get update \
-  && apt-get upgrade --assume-yes --no-install-recommends \
-  && apt-get install --assume-yes --no-install-recommends \
-    libevent-2.1 \
-    libssl3 \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+# hadolint ignore=DL3018
+RUN apk --no-cache upgrade \
+  && apk --no-cache add \
+    bash \
+    libevent
 
 ARG BLESK_TOR_USERNAME
 ARG BLESK_TOR_UID
@@ -101,19 +82,13 @@ ARG BLESK_TOR_GID
 ARG BLESK_TOR_HOME
 ARG BLESK_TOR_ONIONS
 
-RUN groupadd --system \
-    --key SYS_GID_MIN="$BLESK_TOR_GID" \
-    --key SYS_GID_MAX="$BLESK_TOR_GID" \
-    --gid "$BLESK_TOR_GID" \
+RUN addgroup -S \
+    -g "$BLESK_TOR_GID" \
     "$BLESK_TOR_USERNAME" \
-  && useradd --system --create-home \
-    --home-dir "$BLESK_TOR_HOME" \
-    --key SYS_UID_MIN="$BLESK_TOR_UID" \
-    --key SYS_UID_MAX="$BLESK_TOR_UID" \
-    --uid "$BLESK_TOR_UID" \
-    --key SYS_GID_MIN="$BLESK_TOR_GID" \
-    --key SYS_GID_MAX="$BLESK_TOR_GID" \
-    --gid "$BLESK_TOR_GID" \
+  && adduser -S \
+    -h "$BLESK_TOR_HOME" \
+    -u "$BLESK_TOR_UID" \
+    -G "$BLESK_TOR_USERNAME" \
     "$BLESK_TOR_USERNAME" \
   && mkdir \
     --mode 0750 \
