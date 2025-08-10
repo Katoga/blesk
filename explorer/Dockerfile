@@ -1,22 +1,20 @@
-FROM node:24-bookworm-slim AS builder
+FROM node:24-alpine3.22 AS builder
+
+# hadolint ignore=DL3018
+RUN apk --no-cache upgrade \
+  && apk --no-cache add \
+    bash
 
 SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
-
-# hadolint ignore=DL3008
-RUN apt-get update \
-  && apt-get upgrade --assume-yes \
-  && apt-get install --assume-yes --no-install-recommends \
-    ca-certificates \
-    wget
 
 WORKDIR /opt/explorer
 
 ARG BLESK_EXPLORER_VERSION
 ARG BLESK_EXPLORER_CHECKSUM
 RUN tarball="v${BLESK_EXPLORER_VERSION}+SW.tar.gz" \
-  && wget -nv "https://github.com/Dojo-Open-Source-Project/btc-rpc-explorer/archive/refs/tags/${tarball}" \
+  && wget -q "https://github.com/Dojo-Open-Source-Project/btc-rpc-explorer/archive/refs/tags/${tarball}" \
   && echo "${BLESK_EXPLORER_CHECKSUM}  ${tarball}" \
-    | sha512sum --check --status - \
+    | sha512sum -csw - \
   && tar -xvz \
     -f "$tarball" \
     --strip-components 1 \
@@ -26,31 +24,25 @@ RUN tarball="v${BLESK_EXPLORER_VERSION}+SW.tar.gz" \
     --fund=false
 
 
-FROM node:24-bookworm-slim AS runner
+FROM node:24-alpine3.22 AS runner
 
-RUN apt-get update \
-  && apt-get upgrade --assume-yes --no-install-recommends \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+# hadolint ignore=DL3016,DL3018
+RUN apk --no-cache upgrade \
+  && apk --no-cache add \
+    bash
 
 ARG BLESK_EXPLORER_USERNAME
 ARG BLESK_EXPLORER_UID
 ARG BLESK_EXPLORER_GID
 ARG BLESK_EXPLORER_HOME
 
-RUN groupadd --system \
-    --key SYS_GID_MIN="$BLESK_EXPLORER_GID" \
-    --key SYS_GID_MAX="$BLESK_EXPLORER_GID" \
-    --gid "$BLESK_EXPLORER_GID" \
+RUN addgroup -S \
+    -g "$BLESK_EXPLORER_GID" \
     "$BLESK_EXPLORER_USERNAME" \
-  && useradd --system --create-home \
-    --home-dir "$BLESK_EXPLORER_HOME" \
-    --key SYS_UID_MIN="$BLESK_EXPLORER_UID" \
-    --key SYS_UID_MAX="$BLESK_EXPLORER_UID" \
-    --uid "$BLESK_EXPLORER_UID" \
-    --key SYS_GID_MIN="$BLESK_EXPLORER_GID" \
-    --key SYS_GID_MAX="$BLESK_EXPLORER_GID" \
-    --gid "$BLESK_EXPLORER_GID" \
+  && adduser -S \
+    -h "$BLESK_EXPLORER_HOME" \
+    -u "$BLESK_EXPLORER_UID" \
+    -G "$BLESK_EXPLORER_USERNAME" \
     "$BLESK_EXPLORER_USERNAME" \
   && mkdir "${BLESK_EXPLORER_HOME}/explorer" \
   && chown "${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" "${BLESK_EXPLORER_HOME}/explorer"
