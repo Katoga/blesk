@@ -1,4 +1,4 @@
-ARG BLESK_MARIADB_VERSION=11
+ARG BLESK_MARIADB_VERSION=lts
 
 FROM debian:trixie-slim AS builder
 
