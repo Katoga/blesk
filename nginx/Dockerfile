@@ -1,4 +1,4 @@
-FROM nginx:mainline-alpine3.22 AS runner
+FROM nginx:mainline-alpine AS runner
 
 ARG NGINX_ENVSUBST_OUTPUT_DIR
 RUN apk --no-cache upgrade \
