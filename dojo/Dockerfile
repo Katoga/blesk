@@ -1,4 +1,4 @@
-FROM node:24-alpine3.22 AS builder
+FROM node:24-alpine AS builder
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -35,7 +35,7 @@ RUN wget -nv \
   && sed -Ei "s~^(const INTERPRETER =).+~\\1 'node'~" ./pm2.config.cjs.example \
   && mv ./pm2.config.cjs.example ./pm2.config.cjs
 
-FROM node:24-alpine3.22 AS runner
+FROM node:24-alpine AS runner
 
 # hadolint ignore=DL3016,DL3018
 RUN apk --no-cache upgrade \
