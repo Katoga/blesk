@@ -1,4 +1,4 @@
-FROM node:24-alpine3.22 AS builder
+FROM node:24-alpine AS builder
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -24,7 +24,7 @@ RUN tarball="v${BLESK_EXPLORER_VERSION}+SW.tar.gz" \
     --fund=false
 
 
-FROM node:24-alpine3.22 AS runner
+FROM node:24-alpine AS runner
 
 # hadolint ignore=DL3016,DL3018
 RUN apk --no-cache upgrade \
