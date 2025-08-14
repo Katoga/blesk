@@ -62,7 +62,7 @@ RUN tarball="bitcoin-${BLESK_BITCOINCORE_VERSION}.tar.gz" \
     --install build
 
 
-FROM golang:1.24-alpine3.22 AS builder-rpcauth
+FROM golang:1.25-alpine3.22 AS builder-rpcauth
 
 RUN apk --no-cache upgrade
 
