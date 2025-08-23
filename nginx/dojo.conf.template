@@ -7,7 +7,7 @@ map $http_upgrade $connection_upgrade {
 
 # WebSocket server listening here
 upstream websocket {
-  server [${BLESK_DOJO_IPV6}]:${BLESK_DOJO_PORT_API};
+  server dojo:${BLESK_DOJO_PORT_API};
 }
 
 # Site Configuration
@@ -31,22 +31,22 @@ server {
 
   # PushTX server is separate, so proxy first
   location /v2/pushtx/ {
-    proxy_pass http://[${BLESK_DOJO_IPV6}]:${BLESK_DOJO_PORT_PUSHTX}/;
+    proxy_pass http://dojo:${BLESK_DOJO_PORT_PUSHTX}/;
   }
 
   # Tracker server is separate, so proxy first
   location /v2/tracker/ {
-    proxy_pass http://[${BLESK_DOJO_IPV6}]:${BLESK_DOJO_PORT_TRACKER}/;
+    proxy_pass http://dojo:${BLESK_DOJO_PORT_TRACKER}/;
   }
 
   # Proxy requests to maintenance tool
   location /admin/ {
-    proxy_pass http://[${BLESK_DOJO_IPV6}]:${BLESK_DOJO_PORT_API}/static/admin/;
+    proxy_pass http://dojo:${BLESK_DOJO_PORT_API}/static/admin/;
   }
 
   # Proxy all other v2 requests to the accounts server
   location /v2/ {
-    proxy_pass http://[${BLESK_DOJO_IPV6}]:${BLESK_DOJO_PORT_API}/;
+    proxy_pass http://dojo:${BLESK_DOJO_PORT_API}/;
   }
 
   # Redirect onion address to maintenance tool
