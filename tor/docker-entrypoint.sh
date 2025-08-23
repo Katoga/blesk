@@ -13,9 +13,11 @@ tor_options=(
   --DataDirectory "${BLESK_TOR_HOME}/.tor"
   --DataDirectoryGroupReadable 1
 
+  --CookieAuthFile "${BLESK_TOR_HOME}/.tor/control_auth_cookie"
   --CookieAuthentication 1
+  --CookieAuthFileGroupReadable 1
 
-  --ControlPort "$BLESK_TOR_PORT_CONTROL"
+  --ControlPort "[${BLESK_TOR_IPV6}]:${BLESK_TOR_PORT_CONTROL}"
 
   # bitcoincore
   --HiddenServiceDir "${BLESK_TOR_ONIONS}/${BLESK_BITCOINCORE_USERNAME}"
