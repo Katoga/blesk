@@ -29,8 +29,8 @@ bitcoind_options=(
   -rpcbind="$BLESK_BITCOINCORE_IPV6"
   -rpcport="$BLESK_BITCOINCORE_PORT_RPC"
   -rpcauth="$BITCOIND_RPC_AUTH"
-  -zmqpubrawblock="tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}"
-  -zmqpubrawtx="tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_TX}"
+  -zmqpubrawblock="tcp://bitcoincore:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}"
+  -zmqpubrawtx="tcp://bitcoincore:${BLESK_BITCOINCORE_PORT_ZMQ_TX}"
 
   # RPi optimizations
   -maxconnections="$BLESK_BITCOINCORE_MAX_CONNECTIONS"
@@ -64,7 +64,7 @@ ban_knots() {
   # Get all Knots nodes
   local -r all_knots=$(
     bitcoin-cli \
-      --rpcconnect="$BLESK_BITCOINCORE_IPV6" \
+      --rpcconnect=bitcoincore \
       --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
       --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
       --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
@@ -84,7 +84,7 @@ ban_knots() {
       if [[ "$addr" == *"$BLESK_TOR_IPV6"* ]]; then
         log_with_date "Disconnecting node with addr: ${addr}"
         bitcoin-cli \
-          --rpcconnect="$BLESK_BITCOINCORE_IPV6" \
+          --rpcconnect=bitcoincore \
           --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
           --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
           --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
@@ -92,7 +92,7 @@ ban_knots() {
       else
         log_with_date "Banning node with addr: ${addr}"
         bitcoin-cli \
-          --rpcconnect="$BLESK_BITCOINCORE_IPV6" \
+          --rpcconnect=bitcoincore \
           --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
           --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
           --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
