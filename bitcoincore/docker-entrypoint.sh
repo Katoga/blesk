@@ -29,8 +29,8 @@ bitcoind_options=(
   -rpcbind="$BLESK_BITCOINCORE_IPV6"
   -rpcport="$BLESK_BITCOINCORE_PORT_RPC"
   -rpcauth="$BITCOIND_RPC_AUTH"
-  -zmqpubrawblock="tcp://bitcoincore:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}"
-  -zmqpubrawtx="tcp://bitcoincore:${BLESK_BITCOINCORE_PORT_ZMQ_TX}"
+  -zmqpubrawblock="tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}"
+  -zmqpubrawtx="tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_TX}"
 
   # RPi optimizations
   -maxconnections="$BLESK_BITCOINCORE_MAX_CONNECTIONS"
