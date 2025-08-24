@@ -476,14 +476,14 @@ addresstype=bech32m
 
 # Enable publish raw block in <address>
 #zmqpubrawblock=<address>
-zmqpubrawblock=tcp://bitcoincore:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}
+zmqpubrawblock=tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}
 
 # Set publish raw block outbound message high water mark (default: 1000)
 #zmqpubrawblockhwm=<n>
 
 # Enable publish raw transaction in <address>
 #zmqpubrawtx=<address>
-zmqpubrawtx=tcp://bitcoincore:${BLESK_BITCOINCORE_PORT_ZMQ_TX}
+zmqpubrawtx=tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_TX}
 
 # Set publish raw transaction outbound message high water mark (default:
 # 1000)
