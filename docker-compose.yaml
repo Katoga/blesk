@@ -145,7 +145,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_DOJO_IPV6}
-        ipv4_address: ${BLESK_DOJO_IPV4}
     expose:
       - ${BLESK_DOJO_PORT_API}
       - ${BLESK_DOJO_PORT_PUSHTX}
