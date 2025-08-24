@@ -99,7 +99,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_EXPLORER_IPV6}
-        ipv4_address: ${BLESK_EXPLORER_IPV4}
     expose:
       - ${BLESK_EXPLORER_PORT}
     depends_on:
