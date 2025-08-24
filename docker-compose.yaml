@@ -122,7 +122,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_MARIADB_IPV6}
-        ipv4_address: ${BLESK_MARIADB_IPV4}
     expose:
       - ${BLESK_MARIADB_PORT}
   dojo:
