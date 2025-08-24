@@ -9,8 +9,8 @@ node -e " \
     keys.default.bitcoin.bitcoind.rpc.port = process.env.BLESK_BITCOINCORE_PORT_RPC; \
     keys.default.bitcoin.bitcoind.rpc.user = process.env.BLESK_BITCOINCORE_RPC_USER; \
     keys.default.bitcoin.bitcoind.rpc.pass = process.env.BLESK_BITCOINCORE_RPC_PASSWORD; \
-    keys.default.bitcoin.bitcoind.zmqTx = 'tcp://bitcoincore:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_TX; \
-    keys.default.bitcoin.bitcoind.zmqBlk = 'tcp://bitcoincore:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_BLOCK; \
+    keys.default.bitcoin.bitcoind.zmqTx = 'tcp://[' + process.env.BLESK_BITCOINCORE_IPV6 + ']:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_TX; \
+    keys.default.bitcoin.bitcoind.zmqBlk = 'tcp://[' + process.env.BLESK_BITCOINCORE_IPV6 + ']:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_BLOCK; \
     keys.default.bitcoin.db.user = process.env.MARIADB_USER; \
     keys.default.bitcoin.db.pass = process.env.MARIADB_PASSWORD; \
     keys.default.bitcoin.db.host = 'mariadb'; \
