@@ -23,7 +23,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_TOR_IPV6}
-        ipv4_address: ${BLESK_TOR_IPV4}
     expose:
       - ${BLESK_TOR_PORT_SOCKS}
       - ${BLESK_TOR_PORT_CONTROL}
