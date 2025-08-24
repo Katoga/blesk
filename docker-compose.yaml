@@ -167,7 +167,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_NGINX_IPV6}
-        ipv4_address: ${BLESK_NGINX_IPV4}
     expose:
       - ${BLESK_NGINX_PORT}
 
