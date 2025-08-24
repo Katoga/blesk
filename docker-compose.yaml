@@ -180,8 +180,8 @@ networks:
     driver: bridge
     driver_opts:
       com.docker.network.enable_ipv6: "true"
+      com.docker.network.enable_ipv4: "false"
     ipam:
       driver: default
       config:
         - subnet: ${BLESK_NET_INTERNAL_IPV6}
-        - subnet: ${BLESK_NET_INTERNAL_IPV4}
