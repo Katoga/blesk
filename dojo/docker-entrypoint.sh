@@ -19,7 +19,7 @@ node -e " \
     keys.default.bitcoin.auth.strategies.localApiKey.adminKey = process.env.BLESK_DOJO_ADMIN_KEY; \
     keys.default.bitcoin.auth.strategies.localApiKey.apiKeys = [process.env.BLESK_DOJO_API_KEY]; \
     keys.default.bitcoin.auth.jwt.secret = process.env.BLESK_DOJO_JWT_SECRET; \
-    keys.default.bitcoin.apiBind = process.env.BLESK_DOJO_IPV6; \
+    keys.default.bitcoin.apiBind = 'dojo'; \
     keys.default.bitcoin.indexer.active = 'local_indexer'; \
     keys.default.bitcoin.indexer.localIndexer.host = 'electrs'; \
     keys.default.bitcoin.indexer.localIndexer.port = process.env.BLESK_ELECTRS_PORT; \
