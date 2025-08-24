@@ -51,7 +51,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_BITCOINCORE_IPV6}
-        ipv4_address: ${BLESK_BITCOINCORE_IPV4}
     expose:
       - ${BLESK_BITCOINCORE_PORT_RPC}
       - ${BLESK_BITCOINCORE_PORT_P2P}
