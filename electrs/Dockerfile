@@ -1,5 +1,7 @@
 FROM rust:1.89-slim-trixie AS builder
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 ARG BLESK_ELECTRS_VERSION
 
 SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
@@ -29,6 +31,8 @@ RUN apt-get update \
 
 
 FROM debian:trixie-slim AS runner
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
   && apt-get upgrade --assume-yes --no-install-recommends \
