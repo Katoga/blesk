@@ -74,6 +74,7 @@ FROM alpine:3 AS runner
 RUN apk --no-cache upgrade \
   && apk --no-cache add \
     bash \
+    gettext-envsubst \
     libevent
 
 ARG BLESK_TOR_USERNAME
@@ -106,7 +107,7 @@ USER "$BLESK_TOR_USERNAME"
 WORKDIR "$BLESK_TOR_HOME"
 
 COPY --from=builder /usr/local/bin/tor /usr/local/bin/tor
-COPY --from=builder --chown="${BLESK_TOR_UID}:${BLESK_TOR_GID}" /etc/tor/ /etc/tor
+COPY --chown="${BLESK_TOR_UID}:${BLESK_TOR_GID}" torrc.template /etc/tor/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
