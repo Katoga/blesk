@@ -1,6 +1,11 @@
 ClientPreferIPv6ORPort 1
+ClientUseIPv4 0
+ClientUseIPv6 1
 
-SocksPort [${BLESK_TOR_IPV6}]:${BLESK_TOR_PORT_SOCKS}
+NoExec 1
+ProtocolWarnings 1
+
+SocksPort [${BLESK_TOR_IPV6}]:${BLESK_TOR_PORT_SOCKS} OnionTrafficOnly ExtendedErrors
 
 SocksPolicy accept6 ${BLESK_NET_INTERNAL_IPV6}
 SocksPolicy reject *
