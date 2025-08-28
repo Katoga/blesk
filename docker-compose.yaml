@@ -66,6 +66,8 @@ services:
         BLESK_ELECTRS_UID:
         BLESK_ELECTRS_GID:
         BLESK_ELECTRS_HOME:
+        BLESK_BITCOINCORE_USERNAME:
+        BLESK_BITCOINCORE_GID:
     restart: always
     stop_grace_period: 1m
     logging: *logging
@@ -73,6 +75,7 @@ services:
       - ./.env
     volumes:
       - data-electrs:${BLESK_ELECTRS_HOME}
+      - data-bitcoincore:${BLESK_ELECTRS_HOME}/.bitcoin:ro
     networks:
       internal:
         ipv6_address: ${BLESK_ELECTRS_IPV6}
