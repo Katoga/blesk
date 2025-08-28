@@ -29,7 +29,8 @@ FROM node:24-alpine AS runner
 # hadolint ignore=DL3016,DL3018
 RUN apk --no-cache upgrade \
   && apk --no-cache add \
-    bash
+    bash \
+    gettext-envsubst
 
 ARG BLESK_EXPLORER_USERNAME
 ARG BLESK_EXPLORER_UID
@@ -52,6 +53,7 @@ USER "$BLESK_EXPLORER_USERNAME"
 WORKDIR "$BLESK_EXPLORER_HOME"
 
 COPY --from=builder --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" /opt/explorer/ ./
+COPY --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" dotenv.template /etc/btc-rpc-explorer/.env.template
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
