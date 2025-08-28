@@ -363,6 +363,7 @@ whitelist=$BLESK_NET_INTERNAL_IPV6
 # What type of addresses to use ("legacy", "p2sh-segwit", "bech32", or
 # "bech32m", default: "bech32")
 #addresstype=1
+addresstype=bech32m
 
 # Group outputs by address, selecting many (possibly all) or none, instead
 # of selecting on a per-output basis. Privacy is improved as
