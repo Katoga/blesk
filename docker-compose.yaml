@@ -93,11 +93,15 @@ services:
         BLESK_EXPLORER_UID:
         BLESK_EXPLORER_GID:
         BLESK_EXPLORER_HOME:
+        BLESK_BITCOINCORE_USERNAME:
+        BLESK_BITCOINCORE_GID:
     restart: always
     stop_grace_period: 1m
     logging: *logging
     env_file:
       - ./.env
+    volumes:
+      - data-bitcoincore:${BLESK_EXPLORER_HOME}/.bitcoin:ro
     networks:
       internal:
         ipv6_address: ${BLESK_EXPLORER_IPV6}
