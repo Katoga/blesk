@@ -46,7 +46,7 @@ services:
       - ./.env
     volumes:
       - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
-      - data-tor:${BLESK_TOR_HOME}
+      - data-tor:${BLESK_TOR_HOME}:ro
     networks:
       internal:
         ipv6_address: ${BLESK_BITCOINCORE_IPV6}
