@@ -34,8 +34,11 @@ FROM debian:trixie-slim AS runner
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# hadolint ignore=DL3008
 RUN apt-get update \
   && apt-get upgrade --assume-yes --no-install-recommends \
+  && apt-get install --assume-yes --no-install-recommends \
+    gettext-base \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -66,6 +69,7 @@ USER "$BLESK_ELECTRS_USERNAME"
 WORKDIR "$BLESK_ELECTRS_HOME"
 
 COPY --from=builder --chown="${BLESK_ELECTRS_UID}:${BLESK_ELECTRS_GID}" /opt/electrs/target/release/electrs /usr/local/bin/
+COPY --chown="${BLESK_ELECTRS_UID}:${BLESK_ELECTRS_GID}" config.toml.template /etc/electrs/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]

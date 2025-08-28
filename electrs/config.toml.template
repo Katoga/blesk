@@ -1,0 +1,12 @@
+daemon_rpc_addr = "bitcoincore:${BLESK_BITCOINCORE_PORT_RPC}"
+daemon_p2p_addr = "bitcoincore:${BLESK_BITCOINCORE_PORT_P2P}"
+auth = "${BLESK_BITCOINCORE_RPC_USER}:${BLESK_BITCOINCORE_RPC_PASSWORD}"
+
+electrum_rpc_addr = "${BLESK_ELECTRS_IPV6}:${BLESK_ELECTRS_PORT}"
+db_dir = "${BLESK_ELECTRS_HOME}/db"
+
+log_filters = "INFO"
+
+index_lookup_limit = $BLESK_ELECTRS_LOOKUP_LIMIT
+index_batch_size = $BLESK_ELECTRS_BATCH_SIZE
+
