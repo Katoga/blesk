@@ -667,6 +667,7 @@ rpcbind=$BLESK_BITCOINCORE_IPV6
 # Set permissions on the RPC auth cookie file so that it is readable by
 # [owner|group|all] (default: owner [via umask 0077])
 #rpccookieperms=<readable-by>
+rpccookieperms=group
 
 # Password for JSON-RPC connections
 #rpcpassword=<pw>
