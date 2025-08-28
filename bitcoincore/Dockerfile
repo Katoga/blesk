@@ -80,6 +80,7 @@ RUN apk --no-cache upgrade \
   && apk --no-cache add \
     bash \
     boost \
+    gettext-envsubst \
     jq \
     libevent \
     zeromq
@@ -112,6 +113,7 @@ WORKDIR "$BLESK_BITCOINCORE_HOME"
 
 COPY --from=builder-bitcoincore /usr/local/bin/bitcoin* /usr/local/bin/
 COPY --from=builder-rpcauth /opt/rpcauth/rpcauth /usr/local/bin/
+COPY --chown="${BLESK_BITCOINCORE_UID}:${BLESK_BITCOINCORE_GID}" bitcoin.conf.template "./"
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
