@@ -287,6 +287,7 @@ maxuploadtarget=$BLESK_BITCOINCORE_MAX_UPLOAD_TARGET
 # affected by this option. It can be specified multiple times to
 # allow multiple networks.
 #onlynet=<net>
+onlynet=onion
 
 # Serve compact block filters to peers per BIP 157 (default: 0)
 #peerblockfilters=1
