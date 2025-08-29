@@ -68,7 +68,7 @@ USER "$BLESK_DOJO_USERNAME"
 
 WORKDIR "$BLESK_DOJO_HOME"
 
-COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/ ./
+COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/ ./dojo/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]

@@ -4,7 +4,7 @@ set -euo pipefail
 
 node -e " \
     const fs = require('node:fs'); \
-    let keys = require('./keys/index-example.js'); \
+    let keys = require('./dojo/keys/index-example.js'); \
     keys.default.bitcoin.bitcoind.rpc.host = 'bitcoincore'; \
     keys.default.bitcoin.bitcoind.rpc.port = process.env.BLESK_BITCOINCORE_PORT_RPC; \
     keys.default.bitcoin.bitcoind.rpc.user = process.env.BLESK_BITCOINCORE_RPC_USER; \
@@ -28,10 +28,11 @@ node -e " \
     keys.default.bitcoin.explorer.uri = 'http://' + fs.readFileSync(process.env.BLESK_TOR_ONIONS + '/' + process.env.BLESK_EXPLORER_USERNAME + '/hostname', 'utf8').trim(); \
     keys.default.bitcoin.auth.strategies.auth47.hostname = 'http://' + fs.readFileSync(process.env.BLESK_TOR_ONIONS + '/' + process.env.BLESK_DOJO_USERNAME + '/hostname', 'utf8').trim(); \
     keys.default.bitcoin.auth.strategies.auth47.paymentCodes = [process.env.BLESK_DOJO_AUTH47_PAYMENT_CODE]; \
-    fs.writeFileSync('./keys/index.js', 'export default ' + JSON.stringify(keys.default, null, 2)); \
+    fs.writeFileSync('./dojo/keys/index.js', 'export default ' + JSON.stringify(keys.default, null, 2)); \
   "
 # delete keys.default.bitcoin.auth.strategies.auth47; \
 
-chmod 0600 ./keys/index.js
+chmod 0640 ./dojo/keys/index.js
 
+cd dojo
 exec pm2-runtime pm2.config.cjs
