@@ -7,8 +7,9 @@ node -e " \
     let keys = require('./dojo/keys/index-example.js'); \
     keys.default.bitcoin.bitcoind.rpc.host = 'bitcoincore'; \
     keys.default.bitcoin.bitcoind.rpc.port = process.env.BLESK_BITCOINCORE_PORT_RPC; \
-    keys.default.bitcoin.bitcoind.rpc.user = process.env.BLESK_BITCOINCORE_RPC_USER; \
-    keys.default.bitcoin.bitcoind.rpc.pass = process.env.BLESK_BITCOINCORE_RPC_PASSWORD; \
+    keys.default.bitcoin.bitcoind.rpc.user = ''; \
+    keys.default.bitcoin.bitcoind.rpc.pass = ''; \
+    keys.default.bitcoin.bitcoind.rpc.cookie_path = process.env.BLESK_DOJO_HOME + '/.bitcoin/.cookie'; \
     keys.default.bitcoin.bitcoind.zmqTx = 'tcp://bitcoincore:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_TX; \
     keys.default.bitcoin.bitcoind.zmqBlk = 'tcp://bitcoincore:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_BLOCK; \
     keys.default.bitcoin.db.user = process.env.MARIADB_USER; \

@@ -14,6 +14,8 @@ SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
 
 WORKDIR /opt/dojo
 
+COPY cookie.patch ./
+
 ARG BLESK_DOJO_VERSION
 RUN wget -nv \
     -O "samourai-dojo-${BLESK_DOJO_VERSION}.tar.gz" \
@@ -29,6 +31,7 @@ RUN wget -nv \
     --strip-components 1 \
     -f "samourai-dojo-${BLESK_DOJO_VERSION}.tar.gz" \
   && rm -f samourai-dojo-${BLESK_DOJO_VERSION}* \
+  && patch -p1 < cookie.patch \
   && npm install --no-audit --no-fund --no-update-notifier \
     --omit=dev \
   && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js \
@@ -50,6 +53,8 @@ ARG BLESK_DOJO_GID
 ARG BLESK_DOJO_HOME
 ARG BLESK_TOR_USERNAME
 ARG BLESK_TOR_GID
+ARG BLESK_BITCOINCORE_USERNAME
+ARG BLESK_BITCOINCORE_GID
 
 RUN addgroup -S \
     -g "$BLESK_DOJO_GID" \
@@ -57,12 +62,16 @@ RUN addgroup -S \
   && addgroup -S \
     -g "$BLESK_TOR_GID" \
     "$BLESK_TOR_USERNAME" \
+  && addgroup -S \
+    -g "$BLESK_BITCOINCORE_GID" \
+    "$BLESK_BITCOINCORE_USERNAME" \
   && adduser -S \
     -h "$BLESK_DOJO_HOME" \
     -u "$BLESK_DOJO_UID" \
     -G "$BLESK_DOJO_USERNAME" \
     "$BLESK_DOJO_USERNAME" \
-  && addgroup "$BLESK_DOJO_USERNAME" "$BLESK_TOR_USERNAME"
+  && addgroup "$BLESK_DOJO_USERNAME" "$BLESK_TOR_USERNAME" \
+  && addgroup "$BLESK_DOJO_USERNAME" "$BLESK_BITCOINCORE_USERNAME"
 
 USER "$BLESK_DOJO_USERNAME"
 
