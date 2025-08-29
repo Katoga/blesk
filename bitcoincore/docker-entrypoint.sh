@@ -5,12 +5,7 @@ set -euo pipefail
 # Prevent excessive memory usage
 export MALLOC_ARENA_MAX=1
 
-# Generate RPC auth payload
-BITCOIND_RPC_AUTH=$(rpcauth "$BLESK_BITCOINCORE_RPC_USER" "$BLESK_BITCOINCORE_RPC_PASSWORD" 2> /dev/null)
-
-export BITCOIND_RPC_AUTH
 envsubst < "${BLESK_BITCOINCORE_HOME}/bitcoin.conf.template" > "${BLESK_BITCOINCORE_HOME}/.bitcoin/bitcoin.conf"
-export -n BITCOIND_RPC_AUTH
 chmod 0600 "${BLESK_BITCOINCORE_HOME}/.bitcoin/bitcoin.conf"
 rm -f "${BLESK_BITCOINCORE_HOME}/bitcoin.conf.template"
 
@@ -44,8 +39,6 @@ ban_knots() {
     bitcoin-cli \
       --rpcconnect=bitcoincore \
       --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
-      --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
-      --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
       getpeerinfo \
     | \
     jq --raw-output \
@@ -64,16 +57,12 @@ ban_knots() {
         bitcoin-cli \
           --rpcconnect=bitcoincore \
           --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
-          --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
-          --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
           disconnectnode "" "$id"
       else
         log_with_date "Banning node with addr: ${addr}"
         bitcoin-cli \
           --rpcconnect=bitcoincore \
           --rpcport="$BLESK_BITCOINCORE_PORT_RPC" \
-          --rpcuser="$BLESK_BITCOINCORE_RPC_USER" \
-          --rpcpassword="$BLESK_BITCOINCORE_RPC_PASSWORD" \
           setban "$base_addr" "add" 1893456000 true
       fi
     done <<< "$(<<< "$all_knots" jq -c '.')"

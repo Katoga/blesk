@@ -649,7 +649,6 @@ rpcallowip=$BLESK_NET_INTERNAL_IPV6
 # rpcuser=<USERNAME>/rpcpassword=<PASSWORD> pair of arguments. This
 # option can be specified multiple times
 #rpcauth=<userpw>
-rpcauth=$BITCOIND_RPC_AUTH
 
 # Bind to given address to listen for JSON-RPC connections. Do not expose
 # the RPC server to untrusted networks such as the public internet!

@@ -62,17 +62,6 @@ RUN tarball="bitcoin-${BLESK_BITCOINCORE_VERSION}.tar.gz" \
     --install build
 
 
-FROM golang:1.25-alpine AS builder-rpcauth
-
-RUN apk --no-cache upgrade
-
-WORKDIR /opt/rpcauth
-
-COPY rpcauth.go ./
-
-RUN go build -o ./ -tags 'netgo' ./rpcauth.go
-
-
 FROM alpine:3 AS runner
 
 # hadolint ignore=DL3018
@@ -112,7 +101,6 @@ USER "$BLESK_BITCOINCORE_USERNAME"
 WORKDIR "$BLESK_BITCOINCORE_HOME"
 
 COPY --from=builder-bitcoincore /usr/local/bin/bitcoin* /usr/local/bin/
-COPY --from=builder-rpcauth /opt/rpcauth/rpcauth /usr/local/bin/
 COPY --chown="${BLESK_BITCOINCORE_UID}:${BLESK_BITCOINCORE_GID}" bitcoin.conf.template "./"
 
 COPY docker-entrypoint.sh /usr/local/bin/
