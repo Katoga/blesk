@@ -131,6 +131,9 @@ services:
         BLESK_DOJO_UID:
         BLESK_DOJO_GID:
         BLESK_DOJO_HOME:
+        BLESK_DOJO_PORT_API:
+        BLESK_DOJO_PORT_PUSHTX:
+        BLESK_DOJO_PORT_TRACKER:
         BLESK_TOR_USERNAME:
         BLESK_TOR_GID:
         BLESK_BITCOINCORE_USERNAME:
@@ -146,10 +149,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_DOJO_IPV6}
-    expose:
-      - ${BLESK_DOJO_PORT_API}
-      - ${BLESK_DOJO_PORT_PUSHTX}
-      - ${BLESK_DOJO_PORT_TRACKER}
     depends_on:
       - tor
       - bitcoincore

@@ -81,3 +81,11 @@ COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/ ./d
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+
+ARG BLESK_DOJO_PORT_API
+ARG BLESK_DOJO_PORT_PUSHTX
+ARG BLESK_DOJO_PORT_TRACKER
+
+EXPOSE ${BLESK_DOJO_PORT_API}
+EXPOSE ${BLESK_DOJO_PORT_PUSHTX}
+EXPOSE ${BLESK_DOJO_PORT_TRACKER}
