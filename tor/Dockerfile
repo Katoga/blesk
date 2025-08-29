@@ -111,3 +111,9 @@ COPY --chown="${BLESK_TOR_UID}:${BLESK_TOR_GID}" torrc.template /etc/tor/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+
+ARG BLESK_TOR_PORT_SOCKS
+ARG BLESK_TOR_PORT_CONTROL
+
+EXPOSE ${BLESK_TOR_PORT_SOCKS}
+EXPOSE ${BLESK_TOR_PORT_CONTROL}

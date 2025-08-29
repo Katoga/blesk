@@ -9,6 +9,8 @@ services:
         BLESK_TOR_GID:
         BLESK_TOR_HOME:
         BLESK_TOR_ONIONS:
+        BLESK_TOR_PORT_SOCKS:
+        BLESK_TOR_PORT_CONTROL:
     restart: always
     stop_grace_period: 1m
     logging: &logging
@@ -23,9 +25,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_TOR_IPV6}
-    expose:
-      - ${BLESK_TOR_PORT_SOCKS}
-      - ${BLESK_TOR_PORT_CONTROL}
   bitcoincore:
     build:
       context: ./bitcoincore
