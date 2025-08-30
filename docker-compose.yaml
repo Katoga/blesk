@@ -34,6 +34,10 @@ services:
         BLESK_BITCOINCORE_UID:
         BLESK_BITCOINCORE_GID:
         BLESK_BITCOINCORE_HOME:
+        BLESK_BITCOINCORE_PORT_RPC:
+        BLESK_BITCOINCORE_PORT_P2P:
+        BLESK_BITCOINCORE_PORT_ZMQ_BLOCK:
+        BLESK_BITCOINCORE_PORT_ZMQ_TX:
         BLESK_TOR_USERNAME:
         BLESK_TOR_GID:
     restart: always
@@ -47,11 +51,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_BITCOINCORE_IPV6}
-    expose:
-      - ${BLESK_BITCOINCORE_PORT_RPC}
-      - ${BLESK_BITCOINCORE_PORT_P2P}
-      - ${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}
-      - ${BLESK_BITCOINCORE_PORT_ZMQ_TX}
     depends_on:
       - tor
   electrs:
