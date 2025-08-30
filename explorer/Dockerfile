@@ -63,3 +63,7 @@ COPY --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" dotenv.template /etc/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+
+ARG BLESK_EXPLORER_PORT
+
+EXPOSE ${BLESK_EXPLORER_PORT}
