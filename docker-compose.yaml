@@ -167,8 +167,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_NGINX_IPV6}
-    expose:
-      - ${BLESK_NGINX_PORT}
 
 volumes:
   data-tor:
