@@ -81,3 +81,7 @@ COPY --chown="${BLESK_ELECTRS_UID}:${BLESK_ELECTRS_GID}" config.toml.template /e
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+
+ARG BLESK_ELECTRS_PORT
+
+EXPOSE ${BLESK_ELECTRS_PORT}

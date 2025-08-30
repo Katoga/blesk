@@ -62,6 +62,7 @@ services:
         BLESK_ELECTRS_UID:
         BLESK_ELECTRS_GID:
         BLESK_ELECTRS_HOME:
+        BLESK_ELECTRS_PORT:
         BLESK_BITCOINCORE_USERNAME:
         BLESK_BITCOINCORE_GID:
     restart: always
@@ -75,8 +76,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_ELECTRS_IPV6}
-    expose:
-      - ${BLESK_ELECTRS_PORT}
     depends_on:
       - bitcoincore
   explorer:
