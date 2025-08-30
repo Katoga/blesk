@@ -122,8 +122,6 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_MARIADB_IPV6}
-    expose:
-      - ${BLESK_MARIADB_PORT}
   dojo:
     build:
       context: ./dojo
