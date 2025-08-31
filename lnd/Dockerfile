@@ -64,6 +64,34 @@ RUN git clone \
   && mv ./lndinit /usr/local/bin/
 
 
+FROM golang:1.25-alpine AS builder-lndconnect
+
+# hadolint ignore=DL3018
+RUN apk --no-cache upgrade \
+  && apk --no-cache add \
+    bash \
+    build-base
+
+SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
+
+WORKDIR /opt/lndconnect
+
+ARG TARGETPLATFORM
+ARG BLESK_LNDCONNECT_VERSION
+ARG BLESK_LNDCONNECT_CHECKSUM
+
+RUN tarball="v${BLESK_LNDCONNECT_VERSION}.tar.gz" \
+  && wget -q "https://github.com/LN-Zap/lndconnect/archive/refs/tags/${tarball}" \
+  && echo "${BLESK_LNDCONNECT_CHECKSUM}  ${tarball}" \
+    | sha512sum -csw - \
+  && tar x -vz \
+    --strip-components 1 \
+    -f "$tarball" \
+  && rm -f "$tarball" \
+  && go build -o "${GOPATH}/bin/" -tags 'netgo' -ldflags "-w -s -linkmode 'external' -extldflags '-static'" \
+  && mv "${GOPATH}/bin/lndconnect" /usr/local/bin
+
+
 FROM alpine:3 AS runner
 
 # hadolint ignore=DL3018
@@ -105,6 +133,7 @@ WORKDIR "${BLESK_LND_HOME}"
 
 COPY --from=builder-lnd --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" /usr/local/bin/lnd /usr/local/bin/lncli /usr/local/bin/
 COPY --from=builder-lndinit --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" /usr/local/bin/lndinit /usr/local/bin/
+COPY --from=builder-lndconnect --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" /usr/local/bin/lndconnect /usr/local/bin/
 COPY --chown="${BLESK_LND_UID}:${BLESK_LND_GID}" lnd.conf.template ./
 
 COPY docker-entrypoint.sh /usr/local/bin/
