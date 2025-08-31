@@ -47,3 +47,9 @@ HiddenServiceDir "${BLESK_TOR_ONIONS}/${BLESK_LND_USERNAME}"
 HiddenServiceVersion 3
 HiddenServicePort "80 [${BLESK_LND_IPV6}]:${BLESK_LND_PORT_REST}"
 HiddenServiceDirGroupReadable 1
+
+# rtl
+HiddenServiceDir "${BLESK_TOR_ONIONS}/${BLESK_RTL_USERNAME}"
+HiddenServiceVersion 3
+HiddenServicePort "80 [${BLESK_RTL_IPV6}]:${BLESK_RTL_PORT}"
+HiddenServiceDirGroupReadable 1

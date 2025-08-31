@@ -307,6 +307,40 @@ services:
       bitcoincore-ready:
         condition: service_completed_successfully
         restart: true
+  rtl:
+    <<: *svc
+    container_name: rtl
+    image: blesk/rtl
+    build:
+      context: ./rtl
+      args:
+        BLESK_RTL_VERSION:
+        BLESK_RTL_USERNAME:
+        BLESK_RTL_UID:
+        BLESK_RTL_GID:
+        BLESK_RTL_HOME:
+        BLESK_LND_USERNAME:
+        BLESK_LND_GID:
+    volumes:
+      - data-lnd:${BLESK_RTL_HOME}/.lnd:ro
+      - type: tmpfs
+        target: $RTL_CONFIG_PATH
+        tmpfs:
+          size: 1M
+          mode: 0777
+      - type: tmpfs
+        target: ${BLESK_RTL_HOME}/backup
+        tmpfs:
+          size: 1M
+          mode: 0777
+    networks:
+      internal:
+        ipv6_address: ${BLESK_RTL_IPV6}
+    depends_on:
+      lnd:
+        condition: service_started
+    expose:
+      - ${BLESK_RTL_PORT}
 
 volumes:
   data-tor:
