@@ -9,6 +9,8 @@ SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
 
 WORKDIR /opt/explorer
 
+ENV NODE_ENV=production
+
 ARG BLESK_EXPLORER_VERSION
 ARG BLESK_EXPLORER_CHECKSUM
 RUN tarball="v${BLESK_EXPLORER_VERSION}+SW.tar.gz" \
@@ -31,6 +33,8 @@ RUN apk --no-cache upgrade \
   && apk --no-cache add \
     bash \
     gettext-envsubst
+
+ENV NODE_ENV=production
 
 ARG BLESK_EXPLORER_USERNAME
 ARG BLESK_EXPLORER_UID
