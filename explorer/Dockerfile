@@ -21,9 +21,7 @@ RUN tarball="v${BLESK_EXPLORER_VERSION}+SW.tar.gz" \
     -f "$tarball" \
     --strip-components 1 \
   && rm -f "$tarball" \
-  && npm install --no-update-notifier \
-    --audit=false \
-    --fund=false
+  && npm install --no-audit --no-fund --no-update-notifier
 
 
 FROM node:24-alpine AS runner
