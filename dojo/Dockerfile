@@ -14,6 +14,8 @@ SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
 
 WORKDIR /opt/dojo
 
+ENV NODE_ENV=production
+
 COPY cookie.patch ./
 
 ARG BLESK_DOJO_VERSION
@@ -39,6 +41,8 @@ RUN wget -nv \
   && mv ./pm2.config.cjs.example ./pm2.config.cjs
 
 FROM node:24-alpine AS runner
+
+ENV NODE_ENV=production
 
 # hadolint ignore=DL3016,DL3018
 RUN apk --no-cache upgrade \
