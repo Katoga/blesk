@@ -35,7 +35,6 @@ RUN wget -nv \
   && rm -f samourai-dojo-${BLESK_DOJO_VERSION}* \
   && patch -p1 < cookie.patch \
   && npm install --no-audit --no-fund --no-update-notifier \
-    --omit=dev \
   && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js \
   && sed -Ei "s~^(const INTERPRETER =).+~\\1 'node'~" ./pm2.config.cjs.example \
   && mv ./pm2.config.cjs.example ./pm2.config.cjs
@@ -48,7 +47,7 @@ ENV NODE_ENV=production
 RUN apk --no-cache upgrade \
   && apk --no-cache add \
     bash \
-  && npm install -g \
+  && npm install --global --no-audit --no-fund --no-update-notifier \
     pm2
 
 ARG BLESK_DOJO_USERNAME
