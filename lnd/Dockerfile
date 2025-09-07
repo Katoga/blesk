@@ -98,12 +98,14 @@ FROM alpine:3 AS runner
 RUN apk --no-cache upgrade \
   && apk --no-cache add \
     bash \
-    gettext-envsubst
+    gettext-envsubst \
+    inotify-tools
 
 ARG BLESK_LND_USERNAME
 ARG BLESK_LND_UID
 ARG BLESK_LND_GID
 ARG BLESK_LND_HOME
+ARG BLESK_LND_SCB_BACKUP_DIR
 ARG BLESK_TOR_USERNAME
 ARG BLESK_TOR_GID
 ARG BLESK_BITCOINCORE_USERNAME
@@ -126,7 +128,9 @@ RUN addgroup -S \
   && addgroup "$BLESK_LND_USERNAME" "$BLESK_TOR_USERNAME" \
   && addgroup "$BLESK_LND_USERNAME" "$BLESK_BITCOINCORE_USERNAME" \
   && mkdir "${BLESK_LND_HOME}/.lnd" \
-  && chown "${BLESK_LND_UID}:${BLESK_LND_GID}" "${BLESK_LND_HOME}/.lnd"
+  && chown "${BLESK_LND_UID}:${BLESK_LND_GID}" "${BLESK_LND_HOME}/.lnd" \
+  && mkdir -p "${BLESK_LND_SCB_BACKUP_DIR}" \
+  && chown "${BLESK_LND_UID}:${BLESK_LND_GID}" "$BLESK_LND_SCB_BACKUP_DIR"
 
 USER "$BLESK_LND_USERNAME"
 WORKDIR "${BLESK_LND_HOME}"

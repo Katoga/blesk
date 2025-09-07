@@ -204,6 +204,7 @@ services:
         BLESK_LND_PORT_P2P:
         BLESK_LND_PORT_RPC:
         BLESK_LND_PORT_REST:
+        BLESK_LND_SCB_BACKUP_DIR:
         BLESK_LNDINIT_VERSION:
         BLESK_LNDCONNECT_VERSION:
         BLESK_LNDCONNECT_CHECKSUM:
@@ -220,6 +221,7 @@ services:
       - data-lnd:${BLESK_LND_HOME}/.lnd
       - data-tor:${BLESK_TOR_HOME}:ro
       - data-bitcoincore:${BLESK_LND_HOME}/.bitcoin:ro
+      - ${BLESK_LND_SCB_BACKUP_DIR}:${BLESK_LND_SCB_BACKUP_DIR}
     networks:
       internal:
         ipv6_address: ${BLESK_LND_IPV6}

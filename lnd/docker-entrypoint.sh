@@ -10,6 +10,24 @@ log_with_date() {
   echo "$(date --utc +'%Y-%m-%d %H:%M:%S') [INF] BLSK: ${msg}"
 }
 
+scb_backup() {
+  local -r source_file="$1"
+  local -r local_backup_dir="$2"
+
+  while true; do
+    inotifywait \
+      --format "%T [SCBB] Watched file '%w' changed (%e)" \
+      --timefmt '%Y-%m-%dT%H:%M:%S%z' \
+      "$source_file"
+
+    backup_file="${local_backup_dir}/channel-$(date --utc +'%Y%m%d-%H%M%S').backup"
+
+    log_with_date "Creating backup '${backup_file}'"
+    cp "$source_file" "${backup_file}"
+    log_with_date "Backup '${backup_file}' created"
+  done
+}
+
 readonly blesk_lnd_wallet_password_file="${BLESK_LND_HOME}/.lnd/wallet_password.txt"
 if [[ ! -f "$blesk_lnd_wallet_password_file" ]]; then
   log_with_date 'storing password'
@@ -69,5 +87,11 @@ lndinit init-wallet \
 
 log_with_date "Seed: '$(cat "$blesk_lnd_seed_file")'"
 shred -uz "$blesk_lnd_seed_file"
+
+(
+  readonly channel_backup_file="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet/channel.backup"
+  readonly scb_local_backup_dir="${BLESK_LND_SCB_BACKUP_DIR}"
+  scb_backup "$channel_backup_file" "$scb_local_backup_dir"
+) &
 
 exec lnd
