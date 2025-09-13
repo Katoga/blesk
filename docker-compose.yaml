@@ -1,5 +1,6 @@
 services:
   tor:
+    container_name: tor
     build:
       context: ./tor
       args:
@@ -26,6 +27,7 @@ services:
       internal:
         ipv6_address: ${BLESK_TOR_IPV6}
   bitcoincore:
+    container_name: bitcoincore
     build:
       context: ./bitcoincore
       args:
@@ -54,6 +56,7 @@ services:
     depends_on:
       - tor
   electrs:
+    container_name: electrs
     build:
       context: ./electrs
       args:
@@ -79,6 +82,7 @@ services:
     depends_on:
       - bitcoincore
   explorer:
+    container_name: explorer
     build:
       context: ./explorer
       args:
@@ -105,6 +109,7 @@ services:
       - bitcoincore
       - electrs
   mariadb:
+    container_name: mariadb
     build:
       context: ./mariadb
       args:
@@ -123,6 +128,7 @@ services:
       internal:
         ipv6_address: ${BLESK_MARIADB_IPV6}
   dojo:
+    container_name: dojo
     build:
       context: ./dojo
       args:
@@ -155,6 +161,7 @@ services:
       - electrs
       - mariadb
   nginx:
+    container_name: nginx
     build:
       context: ./nginx
       args:
@@ -168,6 +175,7 @@ services:
       internal:
         ipv6_address: ${BLESK_NGINX_IPV6}
   lnd:
+    container_name: lnd
     build:
       context: ./lnd
       args:
