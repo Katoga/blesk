@@ -1,6 +1,8 @@
 services:
   tor:
     container_name: tor
+    image: blesk/tor
+    pull_policy: never
     build:
       context: ./tor
       args:
@@ -28,6 +30,8 @@ services:
         ipv6_address: ${BLESK_TOR_IPV6}
   bitcoincore:
     container_name: bitcoincore
+    image: blesk/bitcoincore
+    pull_policy: never
     build:
       context: ./bitcoincore
       args:
@@ -57,6 +61,8 @@ services:
       - tor
   electrs:
     container_name: electrs
+    image: blesk/electrs
+    pull_policy: never
     build:
       context: ./electrs
       args:
@@ -83,6 +89,8 @@ services:
       - bitcoincore
   explorer:
     container_name: explorer
+    image: blesk/explorer
+    pull_policy: never
     build:
       context: ./explorer
       args:
@@ -110,6 +118,8 @@ services:
       - electrs
   mariadb:
     container_name: mariadb
+    image: blesk/mariadb
+    pull_policy: never
     build:
       context: ./mariadb
       args:
@@ -129,6 +139,8 @@ services:
         ipv6_address: ${BLESK_MARIADB_IPV6}
   dojo:
     container_name: dojo
+    image: blesk/dojo
+    pull_policy: never
     build:
       context: ./dojo
       args:
@@ -162,6 +174,8 @@ services:
       - mariadb
   nginx:
     container_name: nginx
+    image: blesk/nginx
+    pull_policy: never
     build:
       context: ./nginx
       args:
@@ -176,6 +190,8 @@ services:
         ipv6_address: ${BLESK_NGINX_IPV6}
   lnd:
     container_name: lnd
+    image: blesk/lnd
+    pull_policy: never
     build:
       context: ./lnd
       args:
