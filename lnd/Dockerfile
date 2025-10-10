@@ -57,7 +57,6 @@ RUN git clone \
   && wget -q -O - "https://github.com/web-flow.gpg" \
     | gpg --import \
   && git verify-commit "v${BLESK_LNDINIT_VERSION}-beta" \
-  && go get -u \
   && go build \
     -tags 'netgo' \
     -ldflags "-w -s -linkmode 'external' -extldflags '-static'" \
