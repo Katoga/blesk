@@ -8,6 +8,7 @@ RUN apk --no-cache upgrade \
     bash \
     boost-dev \
     build-base \
+    capnproto-dev \
     curl \
     cmake \
     gnupg \
