@@ -7,7 +7,6 @@ export MALLOC_ARENA_MAX=1
 
 envsubst < "${BLESK_BITCOINCORE_HOME}/bitcoin.conf.template" > "${BLESK_BITCOINCORE_HOME}/.bitcoin/bitcoin.conf"
 chmod 0600 "${BLESK_BITCOINCORE_HOME}/.bitcoin/bitcoin.conf"
-rm -f "${BLESK_BITCOINCORE_HOME}/bitcoin.conf.template"
 
 bitcoind_options=(
   -externalip="$(cat "${BLESK_TOR_ONIONS}/${BLESK_BITCOINCORE_USERNAME}/hostname")"
