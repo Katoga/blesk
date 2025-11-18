@@ -17,6 +17,8 @@ RUN apt-get update \
     cmake \
     git \
     gnupg \
+    libclang-dev \
+    llvm-dev \
     wget \
   && wget -nv \
     -O - \
