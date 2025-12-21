@@ -94,10 +94,20 @@ log_with_date "Backing up data with suffix '${now}'"
 cp -a "${BLESK_LND_HOME}/.lnd/" "${BLESK_LND_HOME}/.lnd_backup/${now}/"
 log_with_date "Data with suffix '${now}' backed up"
 
+# Run migration
+log_with_date "Starting migration to sqlite"
+lndinit migrate-db \
+  --debuglevel info \
+  --source.bolt.data-dir "${BLESK_LND_HOME}/.lnd/data" \
+  --dest.sqlite.data-dir "${BLESK_LND_HOME}/.lnd/data" \
+  --dest.backend sqlite \
+  --network mainnet
+log_with_date "Migration to sqlite done"
+
 (
   readonly channel_backup_file="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet/channel.backup"
   readonly scb_local_backup_dir="${BLESK_LND_SCB_BACKUP_DIR}"
   scb_backup "$channel_backup_file" "$scb_local_backup_dir"
 ) &
 
-exec lnd
+exec lnd --db.backend=sqlite
