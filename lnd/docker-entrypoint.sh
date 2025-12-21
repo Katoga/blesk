@@ -88,6 +88,12 @@ lndinit init-wallet \
 log_with_date "Seed: '$(cat "$blesk_lnd_seed_file")'"
 shred -uz "$blesk_lnd_seed_file"
 
+# backup data dir
+now=$(date --utc +'%Y%m%d-%H%M%S')
+log_with_date "Backing up data with suffix '${now}'"
+cp -a "${BLESK_LND_HOME}/.lnd/" "${BLESK_LND_HOME}/.lnd_backup/${now}/"
+log_with_date "Data with suffix '${now}' backed up"
+
 (
   readonly channel_backup_file="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet/channel.backup"
   readonly scb_local_backup_dir="${BLESK_LND_SCB_BACKUP_DIR}"

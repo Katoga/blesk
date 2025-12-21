@@ -130,6 +130,8 @@ RUN addgroup -S \
   && addgroup "$BLESK_LND_USERNAME" "$BLESK_BITCOINCORE_USERNAME" \
   && mkdir "${BLESK_LND_HOME}/.lnd" \
   && chown "${BLESK_LND_UID}:${BLESK_LND_GID}" "${BLESK_LND_HOME}/.lnd" \
+  && mkdir "${BLESK_LND_HOME}/.lnd_backup" \
+  && chown "${BLESK_LND_UID}:${BLESK_LND_GID}" "${BLESK_LND_HOME}/.lnd_backup" \
   && mkdir -p "${BLESK_LND_SCB_BACKUP_DIR}" \
   && chown "${BLESK_LND_UID}:${BLESK_LND_GID}" "$BLESK_LND_SCB_BACKUP_DIR"
 

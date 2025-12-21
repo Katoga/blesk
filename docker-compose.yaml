@@ -275,6 +275,7 @@ services:
     user: $BLESK_LND_USERNAME
     volumes:
       - data-lnd:${BLESK_LND_HOME}/.lnd
+      - data-lnd-backup:${BLESK_LND_HOME}/.lnd_backup
       - data-tor:${BLESK_TOR_HOME}:ro
       - data-bitcoincore:${BLESK_LND_HOME}/.bitcoin:ro
       - ${BLESK_LND_SCB_BACKUP_DIR}:${BLESK_LND_SCB_BACKUP_DIR}
@@ -294,6 +295,7 @@ volumes:
   data-electrs:
   data-mariadb:
   data-lnd:
+  data-lnd-backup:
 
 networks:
   public:
