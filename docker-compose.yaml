@@ -239,6 +239,7 @@ volumes:
 networks:
   internal:
     driver: bridge
+    internal: true
     driver_opts:
       com.docker.network.enable_ipv6: "true"
       com.docker.network.enable_ipv4: "false"
