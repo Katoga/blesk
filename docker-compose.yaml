@@ -1,5 +1,5 @@
 services:
-  tor:
+  tor: &svc
     container_name: tor
     image: blesk/tor
     pull_policy: never
@@ -30,9 +30,9 @@ services:
         ipv6_address: ${BLESK_TOR_IPV6}
       external:
   bitcoincore:
+    <<: *svc
     container_name: bitcoincore
     image: blesk/bitcoincore
-    pull_policy: never
     build:
       context: ./bitcoincore
       args:
@@ -47,11 +47,6 @@ services:
         BLESK_BITCOINCORE_PORT_ZMQ_TX:
         BLESK_TOR_USERNAME:
         BLESK_TOR_GID:
-    restart: always
-    stop_grace_period: 1m
-    logging: *logging
-    env_file:
-      - ./.env
     volumes:
       - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
       - data-tor:${BLESK_TOR_HOME}:ro
