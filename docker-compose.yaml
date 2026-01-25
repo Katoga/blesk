@@ -14,6 +14,7 @@ services:
         BLESK_TOR_ONIONS:
         BLESK_TOR_PORT_SOCKS:
         BLESK_TOR_PORT_CONTROL:
+    user: $BLESK_TOR_USERNAME
     restart: always
     stop_grace_period: 1m
     logging:
