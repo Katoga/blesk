@@ -28,6 +28,7 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_TOR_IPV6}
+      external:
   bitcoincore:
     container_name: bitcoincore
     image: blesk/bitcoincore
@@ -237,6 +238,11 @@ volumes:
   data-lnd:
 
 networks:
+  external:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+      com.docker.network.enable_ipv4: "false"
   internal:
     driver: bridge
     internal: true
