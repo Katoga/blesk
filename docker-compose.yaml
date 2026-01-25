@@ -103,9 +103,9 @@ services:
       - bitcoincore
       - electrs
   mariadb:
+    <<: *svc
     container_name: mariadb
     image: blesk/mariadb
-    pull_policy: never
     build:
       context: ./mariadb
       args:
@@ -113,11 +113,6 @@ services:
         BLESK_MARIADB_SCRIPTS_CHECKSUM_1:
         BLESK_MARIADB_SCRIPTS_CHECKSUM_2:
         BLESK_MARIADB_VERSION:
-    restart: always
-    stop_grace_period: 1m
-    logging: *logging
-    env_file:
-      - ./.env
     volumes:
       - data-mariadb:/var/lib/mysql
     networks:
