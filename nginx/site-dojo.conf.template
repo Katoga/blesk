@@ -12,7 +12,7 @@ upstream websocket {
 
 # Site Configuration
 server {
-  listen [${BLESK_NGINX_IPV6}]:80;
+  listen [${BLESK_NGINX_IPV6}]:${BLESK_NGINX_PORT};
   server_name _;
 
   # Set proxy timeouts for the application
