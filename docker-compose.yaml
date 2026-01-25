@@ -96,6 +96,7 @@ services:
         BLESK_EXPLORER_PORT:
         BLESK_BITCOINCORE_USERNAME:
         BLESK_BITCOINCORE_GID:
+    user: $BLESK_EXPLORER_USERNAME
     volumes:
       - data-bitcoincore:${BLESK_EXPLORER_HOME}/.bitcoin:ro
     networks:
