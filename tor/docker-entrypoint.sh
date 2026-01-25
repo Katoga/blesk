@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
-envsubst < /etc/tor/torrc.template > /etc/tor/torrc
+envsubst < /tmp/torrc.template > /etc/tor/torrc
+chmod 0600 /etc/tor/torrc
 
 exec tor

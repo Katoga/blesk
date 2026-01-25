@@ -107,7 +107,7 @@ USER "$BLESK_TOR_USERNAME"
 WORKDIR "$BLESK_TOR_HOME"
 
 COPY --from=builder /usr/local/bin/tor /usr/local/bin/tor
-COPY --chown="${BLESK_TOR_UID}:${BLESK_TOR_GID}" torrc.template /etc/tor/
+COPY --chown="${BLESK_TOR_UID}:${BLESK_TOR_GID}" torrc.template /tmp/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
