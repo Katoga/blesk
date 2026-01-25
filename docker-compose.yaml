@@ -116,6 +116,7 @@ services:
         BLESK_MARIADB_SCRIPTS_CHECKSUM_1:
         BLESK_MARIADB_SCRIPTS_CHECKSUM_2:
         BLESK_MARIADB_VERSION:
+    user: mysql
     volumes:
       - data-mariadb:/var/lib/mysql
     networks:
