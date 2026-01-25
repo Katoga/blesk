@@ -16,7 +16,7 @@ services:
         BLESK_TOR_PORT_CONTROL:
     restart: always
     stop_grace_period: 1m
-    logging: &logging
+    logging:
       driver: "json-file"
       options:
         max-size: "20m"
