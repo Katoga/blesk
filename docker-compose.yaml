@@ -47,6 +47,7 @@ services:
         BLESK_BITCOINCORE_PORT_ZMQ_TX:
         BLESK_TOR_USERNAME:
         BLESK_TOR_GID:
+    user: $BLESK_BITCOINCORE_USERNAME
     volumes:
       - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
       - data-tor:${BLESK_TOR_HOME}:ro
