@@ -71,6 +71,7 @@ services:
         BLESK_ELECTRS_PORT:
         BLESK_BITCOINCORE_USERNAME:
         BLESK_BITCOINCORE_GID:
+    user: $BLESK_ELECTRS_USERNAME
     volumes:
       - data-electrs:${BLESK_ELECTRS_HOME}
       - data-bitcoincore:${BLESK_ELECTRS_HOME}/.bitcoin:ro
