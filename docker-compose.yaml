@@ -79,9 +79,9 @@ services:
     depends_on:
       - bitcoincore
   explorer:
+    <<: *svc
     container_name: explorer
     image: blesk/explorer
-    pull_policy: never
     build:
       context: ./explorer
       args:
@@ -94,11 +94,6 @@ services:
         BLESK_EXPLORER_PORT:
         BLESK_BITCOINCORE_USERNAME:
         BLESK_BITCOINCORE_GID:
-    restart: always
-    stop_grace_period: 1m
-    logging: *logging
-    env_file:
-      - ./.env
     volumes:
       - data-bitcoincore:${BLESK_EXPLORER_HOME}/.bitcoin:ro
     networks:
