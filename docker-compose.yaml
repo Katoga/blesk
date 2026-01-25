@@ -191,6 +191,7 @@ services:
         BLESK_TOR_GID:
         BLESK_BITCOINCORE_USERNAME:
         BLESK_BITCOINCORE_GID:
+    user: $BLESK_LND_USERNAME
     volumes:
       - data-lnd:${BLESK_LND_HOME}/.lnd
       - data-tor:${BLESK_TOR_HOME}:ro
