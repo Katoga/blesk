@@ -149,18 +149,14 @@ services:
       - electrs
       - mariadb
   nginx:
+    <<: *svc
     container_name: nginx
     image: blesk/nginx
-    pull_policy: never
     build:
       context: ./nginx
       args:
         NGINX_ENVSUBST_OUTPUT_DIR:
-    restart: always
-    stop_grace_period: 1m
-    logging: *logging
-    env_file:
-      - ./.env
+    volumes: []
     networks:
       internal:
         ipv6_address: ${BLESK_NGINX_IPV6}
