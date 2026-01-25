@@ -161,9 +161,9 @@ services:
       internal:
         ipv6_address: ${BLESK_NGINX_IPV6}
   lnd:
+    <<: *svc
     container_name: lnd
     image: blesk/lnd
-    pull_policy: never
     build:
       context: ./lnd
       args:
@@ -184,11 +184,6 @@ services:
         BLESK_TOR_GID:
         BLESK_BITCOINCORE_USERNAME:
         BLESK_BITCOINCORE_GID:
-    restart: always
-    stop_grace_period: 1m
-    logging: *logging
-    env_file:
-      - ./.env
     volumes:
       - data-lnd:${BLESK_LND_HOME}/.lnd
       - data-tor:${BLESK_TOR_HOME}:ro
