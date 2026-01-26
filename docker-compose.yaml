@@ -105,6 +105,16 @@ services:
     user: $BLESK_EXPLORER_USERNAME
     volumes:
       - data-bitcoincore:${BLESK_EXPLORER_HOME}/.bitcoin:ro
+      - type: tmpfs
+        target: "${BLESK_EXPLORER_HOME}/cache"
+        tmpfs:
+          size: 1M
+          mode: 0777
+      - type: tmpfs
+        target: /etc/btc-rpc-explorer
+        tmpfs:
+          size: 1M
+          mode: 0777
     networks:
       internal:
         ipv6_address: ${BLESK_EXPLORER_IPV6}

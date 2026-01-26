@@ -61,7 +61,7 @@ USER "$BLESK_EXPLORER_USERNAME"
 WORKDIR "$BLESK_EXPLORER_HOME"
 
 COPY --from=builder --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" /opt/explorer/ ./explorer/
-COPY --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" dotenv.template /etc/btc-rpc-explorer/.env.template
+COPY --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" dotenv.template /tmp/.env.template
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
