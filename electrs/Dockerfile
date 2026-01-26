@@ -79,7 +79,7 @@ USER "$BLESK_ELECTRS_USERNAME"
 WORKDIR "$BLESK_ELECTRS_HOME"
 
 COPY --from=builder --chown="${BLESK_ELECTRS_UID}:${BLESK_ELECTRS_GID}" /opt/electrs/target/release/electrs /usr/local/bin/
-COPY --chown="${BLESK_ELECTRS_UID}:${BLESK_ELECTRS_GID}" config.toml.template /etc/electrs/
+COPY --chown="${BLESK_ELECTRS_UID}:${BLESK_ELECTRS_GID}" config.toml.template /tmp/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]

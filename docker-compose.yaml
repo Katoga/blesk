@@ -76,6 +76,11 @@ services:
     volumes:
       - data-electrs:${BLESK_ELECTRS_HOME}
       - data-bitcoincore:${BLESK_ELECTRS_HOME}/.bitcoin:ro
+      - type: tmpfs
+        target: /etc/electrs
+        tmpfs:
+          size: 1M
+          mode: 0777
     networks:
       internal:
         ipv6_address: ${BLESK_ELECTRS_IPV6}
