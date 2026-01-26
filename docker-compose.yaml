@@ -209,7 +209,17 @@ services:
         NGINX_ENVSUBST_OUTPUT_DIR:
         NGINX_ENVSUBST_TEMPLATE_DIR:
     user: nginx
-    volumes: []
+    volumes:
+      - type: tmpfs
+        target: /etc/nginx/sites-enabled
+        tmpfs:
+          size: 1M
+          mode: 0777
+      - type: tmpfs
+        target: /tmp/
+        tmpfs:
+          size: 1M
+          mode: 0777
     networks:
       internal:
         ipv6_address: ${BLESK_NGINX_IPV6}
