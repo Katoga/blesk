@@ -75,7 +75,7 @@ fi
 
 export blesk_lnd_wallet_password_file
 envsubst < "${BLESK_LND_HOME}/lnd.conf.template" > "${BLESK_LND_HOME}/.lnd/lnd.conf"
-chmod 0640 "${BLESK_LND_HOME}/.lnd/lnd.conf"
+chmod 0600 "${BLESK_LND_HOME}/.lnd/lnd.conf"
 export -n blesk_lnd_wallet_password_file
 
 lndinit init-wallet \
