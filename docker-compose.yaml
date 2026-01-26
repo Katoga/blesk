@@ -125,6 +125,16 @@ services:
     user: mysql
     volumes:
       - data-mariadb:/var/lib/mysql
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 10M
+          mode: 0777
+      - type: tmpfs
+        target: /run/mysqld
+        tmpfs:
+          size: 1M
+          mode: 0777
     networks:
       internal:
         ipv6_address: ${BLESK_MARIADB_IPV6}
