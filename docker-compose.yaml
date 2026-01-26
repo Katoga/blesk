@@ -161,6 +161,26 @@ services:
     volumes:
       - data-tor:${BLESK_TOR_HOME}:ro
       - data-bitcoincore:${BLESK_DOJO_HOME}/.bitcoin:ro
+      - type: tmpfs
+        target: ${BLESK_DOJO_HOME}/dojo/keys
+        tmpfs:
+          size: 1M
+          mode: 0777
+      - type: tmpfs
+        target: ${BLESK_DOJO_HOME}/.npm
+        tmpfs:
+          size: 1M
+          mode: 0777
+      - type: tmpfs
+        target: ${BLESK_DOJO_HOME}/.pm2
+        tmpfs:
+          size: 1M
+          mode: 0777
+      - type: tmpfs
+        target: ${BLESK_DOJO_LOGS_DIR}
+        tmpfs:
+          size: 1M
+          mode: 0777
     networks:
       internal:
         ipv6_address: ${BLESK_DOJO_IPV6}

@@ -35,9 +35,7 @@ RUN wget -nv \
   && rm -f samourai-dojo-${BLESK_DOJO_VERSION}* \
   && patch -p1 < cookie.patch \
   && npm install --no-audit --no-fund --no-update-notifier \
-  && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js \
-  && sed -Ei "s~^(const INTERPRETER =).+~\\1 'node'~" ./pm2.config.cjs.example \
-  && mv ./pm2.config.cjs.example ./pm2.config.cjs
+  && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js
 
 FROM node:24-alpine AS runner
 
@@ -81,6 +79,8 @@ USER "$BLESK_DOJO_USERNAME"
 WORKDIR "$BLESK_DOJO_HOME"
 
 COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/ ./dojo/
+COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/keys/index-example.js ./
+COPY --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" pm2.config.cjs ./dojo/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]

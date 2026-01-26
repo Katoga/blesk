@@ -4,7 +4,7 @@ set -euo pipefail
 
 node -e " \
     const fs = require('node:fs'); \
-    let keys = require('./dojo/keys/index-example.js'); \
+    let keys = require(process.env.BLESK_DOJO_HOME + '/index-example.js'); \
     keys.default.bitcoin.bitcoind.rpc.host = 'bitcoincore'; \
     keys.default.bitcoin.bitcoind.rpc.port = process.env.BLESK_BITCOINCORE_PORT_RPC; \
     keys.default.bitcoin.bitcoind.rpc.user = ''; \
@@ -36,7 +36,7 @@ node -e " \
   "
 # delete keys.default.bitcoin.auth.strategies.auth47; \
 
-chmod 0640 ./dojo/keys/index.js
+chmod 0600 ./dojo/keys/index.js
 
 cd dojo
 exec pm2-runtime pm2.config.cjs
