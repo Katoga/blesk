@@ -12,6 +12,9 @@ node -e " \
     keys.default.bitcoin.bitcoind.rpc.cookie_path = process.env.BLESK_DOJO_HOME + '/.bitcoin/.cookie'; \
     keys.default.bitcoin.bitcoind.zmqTx = 'tcp://bitcoincore:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_TX; \
     keys.default.bitcoin.bitcoind.zmqBlk = 'tcp://bitcoincore:' + process.env.BLESK_BITCOINCORE_PORT_ZMQ_BLOCK; \
+    keys.default.bitcoin.ports.account = process.env.BLESK_DOJO_PORT_API; \
+    keys.default.bitcoin.ports.pushtx = process.env.BLESK_DOJO_PORT_PUSHTX; \
+    keys.default.bitcoin.ports.trackerApi = process.env.BLESK_DOJO_PORT_TRACKER; \
     keys.default.bitcoin.db.user = process.env.MARIADB_USER; \
     keys.default.bitcoin.db.pass = process.env.MARIADB_PASSWORD; \
     keys.default.bitcoin.db.host = 'mariadb'; \
