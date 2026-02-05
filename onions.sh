@@ -3,4 +3,4 @@
 
 set -euo pipefail
 
-docker compose exec tor bash -c 'for o in $(ls ${BLESK_TOR_ONIONS}); do echo "${o}: $(cat ${BLESK_TOR_ONIONS}/${o}/hostname)"; done'
+docker run -t --rm -v blesk_data-tor:/srv/tor:ro --workdir /srv/tor alpine:3 sh -c 'for o in $(ls | grep ^onion_); do echo "${o}: $(cat ${o}/hostname)"; done'

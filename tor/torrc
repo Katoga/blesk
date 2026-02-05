@@ -1,0 +1,13 @@
+ClientPreferIPv6ORPort 1
+ClientUseIPv4 0
+ClientUseIPv6 1
+
+NoExec 1
+ProtocolWarnings 1
+
+SocksPolicy reject *
+
+DataDirectoryGroupReadable 1
+
+CookieAuthentication 1
+CookieAuthFileGroupReadable 1

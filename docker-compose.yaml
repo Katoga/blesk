@@ -25,21 +25,70 @@ services:
       context: ./tor
       args:
         BLESK_TOR_VERSION:
-        BLESK_TOR_USERNAME:
-        BLESK_TOR_UID:
-        BLESK_TOR_GID:
-        BLESK_TOR_HOME:
-        BLESK_TOR_ONIONS:
+        BLESK_TOR_COOKIE_DIR:
         BLESK_TOR_PORT_SOCKS:
         BLESK_TOR_PORT_CONTROL:
-    user: $BLESK_TOR_USERNAME
+    command:
+      - --SocksPort
+      - >-
+        [${BLESK_TOR_IPV6}]:${BLESK_TOR_PORT_SOCKS} OnionTrafficOnly ExtendedErrors
+      - --SocksPolicy
+      - accept6 ${BLESK_NET_INTERNAL_IPV6}
+      - --DataDirectory
+      - /home/nonroot/.tor
+      - --ControlPort
+      - >-
+        [${BLESK_TOR_IPV6}]:${BLESK_TOR_PORT_CONTROL}
+      - --CookieAuthFile
+      - ${BLESK_TOR_COOKIE_DIR}/control_auth_cookie
+      # bitcoincore
+      - --HiddenServiceDir
+      - /home/nonroot/onion_bitcoincore
+      - --HiddenServiceVersion
+      - "3"
+      - --HiddenServicePort
+      - ${BLESK_BITCOINCORE_PORT_P2P} [${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_P2P}
+      - --HiddenServiceDirGroupReadable
+      - "1"
+      # electrs
+      - --HiddenServiceDir
+      - /home/nonroot/onion_electrs
+      - --HiddenServiceVersion
+      - "3"
+      - --HiddenServicePort
+      - ${BLESK_ELECTRS_PORT} [${BLESK_ELECTRS_IPV6}]:${BLESK_ELECTRS_PORT}
+      - --HiddenServiceDirGroupReadable
+      - "1"
+      # explorer
+      - --HiddenServiceDir
+      - /home/nonroot/onion_explorer
+      - --HiddenServiceVersion
+      - "3"
+      - --HiddenServicePort
+      - 80 [${BLESK_EXPLORER_IPV6}]:${BLESK_EXPLORER_PORT}
+      - --HiddenServiceDirGroupReadable
+      - "1"
+      # dojo
+      - --HiddenServiceDir
+      - /home/nonroot/onion_dojo
+      - --HiddenServiceVersion
+      - "3"
+      - --HiddenServicePort
+      - 80 [${BLESK_NGINX_IPV6}]:${BLESK_NGINX_PORT}
+      - --HiddenServiceDirGroupReadable
+      - "1"
+      # lnd
+      - --HiddenServiceDir
+      - /home/nonroot/onion_lnd
+      - --HiddenServiceVersion
+      - "3"
+      - --HiddenServicePort
+      - 80 [${BLESK_LND_IPV6}]:${BLESK_LND_PORT_REST}
+      - --HiddenServiceDirGroupReadable
+      - "1"
     volumes:
-      - data-tor:${BLESK_TOR_HOME}
-      - type: tmpfs
-        target: /etc/tor
-        tmpfs:
-          size: 1M
-          mode: 0777
+      - data-tor:/home/nonroot
+      - cookie-tor:${BLESK_TOR_COOKIE_DIR}
     networks:
       internal:
         ipv6_address: ${BLESK_TOR_IPV6}
@@ -290,6 +339,7 @@ services:
 
 volumes:
   data-tor:
+  cookie-tor:
   data-bitcoincore:
   data-electrs:
   data-mariadb:

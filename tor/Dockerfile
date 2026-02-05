@@ -1,13 +1,18 @@
-FROM alpine:3 AS builder
+FROM debian:trixie-slim AS builder
 
-# hadolint ignore=DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    build-base \
+ENV DEBIAN_FRONTEND=noninteractive
+
+# hadolint ignore=DL3008
+RUN apt-get update \
+  && apt-get upgrade --assume-yes \
+  && apt-get install --assume-yes --no-install-recommends \
+    build-essential \
+    ca-certificates \
     gnupg \
     libevent-dev \
-    openssl-dev \
-    zlib-dev
+    libssl-dev \
+    libzip-dev \
+    wget
 
 WORKDIR /opt/tor
 
@@ -65,52 +70,21 @@ RUN ( \
     --disable-unittests \
     --sysconfdir=/etc \
   && make \
-  && make install
+  && make install \
+  # empty dir needed for seting permission on data dir in runner
+  && mkdir /empty
 
+FROM gcr.io/distroless/base-debian13:nonroot AS runner
 
-FROM alpine:3 AS runner
+# just to set owner of the dir where volume is mounted
+ARG BLESK_TOR_COOKIE_DIR
+COPY --from=builder --chown=nonroot:nonroot /empty/ ${BLESK_TOR_COOKIE_DIR}
 
-# hadolint ignore=DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash \
-    gettext-envsubst \
-    libevent
-
-ARG BLESK_TOR_USERNAME
-ARG BLESK_TOR_UID
-ARG BLESK_TOR_GID
-ARG BLESK_TOR_HOME
-ARG BLESK_TOR_ONIONS
-
-RUN addgroup -S \
-    -g "$BLESK_TOR_GID" \
-    "$BLESK_TOR_USERNAME" \
-  && adduser -S \
-    -h "$BLESK_TOR_HOME" \
-    -u "$BLESK_TOR_UID" \
-    -G "$BLESK_TOR_USERNAME" \
-    "$BLESK_TOR_USERNAME" \
-  && mkdir \
-    --mode 0750 \
-    /etc/tor \
-    "${BLESK_TOR_ONIONS}" \
-  && mkdir \
-    --mode 0700 \
-    "${BLESK_TOR_HOME}/.tor" \
-  && chown -R "${BLESK_TOR_UID}:${BLESK_TOR_GID}" \
-    /etc/tor \
-    "$BLESK_TOR_HOME"
-
-USER "$BLESK_TOR_USERNAME"
-
-WORKDIR "$BLESK_TOR_HOME"
-
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libevent-2.1.so.7 /usr/lib/x86_64-linux-gnu/
 COPY --from=builder /usr/local/bin/tor /usr/local/bin/tor
-COPY --chown="${BLESK_TOR_UID}:${BLESK_TOR_GID}" torrc.template /tmp/
+COPY ./torrc /etc/tor/torrc
 
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/bin/tor" ]
 
 ARG BLESK_TOR_PORT_SOCKS
 ARG BLESK_TOR_PORT_CONTROL
