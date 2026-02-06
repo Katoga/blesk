@@ -175,23 +175,26 @@ services:
       args:
         BLESK_EXPLORER_VERSION:
         BLESK_EXPLORER_CHECKSUM:
-        BLESK_EXPLORER_USERNAME:
-        BLESK_EXPLORER_UID:
-        BLESK_EXPLORER_GID:
-        BLESK_EXPLORER_HOME:
         BLESK_EXPLORER_PORT:
-        BLESK_BITCOINCORE_USERNAME:
-        BLESK_BITCOINCORE_GID:
-    user: $BLESK_EXPLORER_USERNAME
+    command:
+      - --host
+      - $BLESK_EXPLORER_IPV6
+      - --port
+      - $BLESK_EXPLORER_PORT
+      - --bitcoind-port
+      - $BLESK_BITCOINCORE_PORT_RPC
+      - --bitcoind-cookie
+      - ${BLESK_BITCOINCORE_COOKIE_DIR}/.cookie
+      - --electrum-servers
+      - tcp://electrs:${BLESK_ELECTRS_PORT}
+      - --slow-device-mode
+      - $BLESK_EXPLORER_SLOW_DEVICE_MODE
+      - --filesystem-cache-dir
+      - $BLESK_EXPLORER_CACHE_DIR
     volumes:
-      - data-bitcoincore:${BLESK_EXPLORER_HOME}/.bitcoin:ro
+      - cookie-bitcoincore:${BLESK_BITCOINCORE_COOKIE_DIR}:ro
       - type: tmpfs
-        target: "${BLESK_EXPLORER_HOME}/cache"
-        tmpfs:
-          size: 1M
-          mode: 0777
-      - type: tmpfs
-        target: /etc/btc-rpc-explorer
+        target: $BLESK_EXPLORER_CACHE_DIR
         tmpfs:
           size: 1M
           mode: 0777

@@ -1,11 +1,12 @@
-FROM node:24-alpine AS builder
+FROM node:24-trixie AS builder
 
-# hadolint ignore=DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash
+ENV DEBIAN_FRONTEND=noninteractive
 
 SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
+
+# hadolint ignore=DL3018
+RUN apt-get update \
+  && apt-get upgrade --assume-yes
 
 WORKDIR /opt/explorer
 
@@ -16,55 +17,30 @@ ARG BLESK_EXPLORER_CHECKSUM
 RUN tarball="v${BLESK_EXPLORER_VERSION}+SW.tar.gz" \
   && wget -q "https://github.com/Dojo-Open-Source-Project/btc-rpc-explorer/archive/refs/tags/${tarball}" \
   && echo "${BLESK_EXPLORER_CHECKSUM}  ${tarball}" \
-    | sha512sum -csw - \
+    | sha512sum -cw - \
   && tar -xvz \
     -f "$tarball" \
     --strip-components 1 \
   && rm -f "$tarball" \
   && npm install --no-audit --no-fund --no-update-notifier
 
+RUN sed -i 's~#!/usr/bin/env node~#!/nodejs/bin/node~' ./bin/cli.js
 
-FROM node:24-alpine AS runner
+RUN sed -E 's~^#?(BTCEXP_BITCOIND_HOST)=.+$~\1=bitcoincore~' .env-sample \
+  | sed -E 's~^#?(BTCEXP_ADDRESS_API)=.+$~\1=electrum~' \
+  | sed -E 's~^#?(BTCEXP_PRIVACY_MODE|BTCEXP_NO_RATES)=.+$~\1=true~' \
+  > .env
 
-# hadolint ignore=DL3016,DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash \
-    gettext-envsubst
+FROM gcr.io/distroless/nodejs24-debian13:nonroot AS runner
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 ENV NODE_ENV=production
 
-ARG BLESK_EXPLORER_USERNAME
-ARG BLESK_EXPLORER_UID
-ARG BLESK_EXPLORER_GID
-ARG BLESK_EXPLORER_HOME
-ARG BLESK_BITCOINCORE_USERNAME
-ARG BLESK_BITCOINCORE_GID
+COPY --from=builder /opt/explorer/ /home/nonroot/explorer/
+COPY --from=builder /opt/explorer/.env /etc/btc-rpc-explorer/.env
 
-RUN addgroup -S \
-    -g "$BLESK_EXPLORER_GID" \
-    "$BLESK_EXPLORER_USERNAME" \
-  && addgroup -S \
-    -g "$BLESK_BITCOINCORE_GID" \
-    "$BLESK_BITCOINCORE_USERNAME" \
-  && adduser -S \
-    -h "$BLESK_EXPLORER_HOME" \
-    -u "$BLESK_EXPLORER_UID" \
-    -G "$BLESK_EXPLORER_USERNAME" \
-    "$BLESK_EXPLORER_USERNAME" \
-  && addgroup "$BLESK_EXPLORER_USERNAME" "$BLESK_BITCOINCORE_USERNAME" \
-  && mkdir "${BLESK_EXPLORER_HOME}/explorer" \
-  && chown "${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" "${BLESK_EXPLORER_HOME}/explorer"
-
-USER "$BLESK_EXPLORER_USERNAME"
-
-WORKDIR "$BLESK_EXPLORER_HOME"
-
-COPY --from=builder --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" /opt/explorer/ ./explorer/
-COPY --chown="${BLESK_EXPLORER_UID}:${BLESK_EXPLORER_GID}" dotenv.template /tmp/.env.template
-
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+ENTRYPOINT [ "./explorer/bin/cli.js" ]
 
 ARG BLESK_EXPLORER_PORT
 
