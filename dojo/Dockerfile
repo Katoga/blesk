@@ -1,24 +1,22 @@
-FROM node:24-alpine AS builder
+FROM node:24-trixie AS builder
 
-# hadolint ignore=DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash \
-    build-base \
-    ca-certificates \
-    gnupg \
-    gyp \
-    wget
+ENV DEBIAN_FRONTEND=noninteractive
 
 SHELL [ "/bin/bash", "-euo", "pipefail", "-c" ]
+
+# hadolint ignore=DL3018
+RUN apt-get update \
+  && apt-get upgrade --assume-yes
 
 WORKDIR /opt/dojo
 
 ENV NODE_ENV=production
 
-COPY cookie.patch ./
+COPY cookie.patch npmroot.patch ./
 
 ARG BLESK_DOJO_VERSION
+
+# hadolint ignore=DL3016
 RUN wget -nv \
     -O "samourai-dojo-${BLESK_DOJO_VERSION}.tar.gz" \
     "https://github.com/Dojo-Open-Source-Project/samourai-dojo/archive/refs/tags/v${BLESK_DOJO_VERSION}.tar.gz" \
@@ -28,62 +26,35 @@ RUN wget -nv \
     | gpg --import \
   && gpg --verify "samourai-dojo-${BLESK_DOJO_VERSION}-fingerprints.txt.sig" \
   && grep 'tar\.gz' "samourai-dojo-${BLESK_DOJO_VERSION}-fingerprints.txt" \
-    | sha256sum -cs - \
+    | sha256sum -c - \
   && tar -xvz \
     --strip-components 1 \
     -f "samourai-dojo-${BLESK_DOJO_VERSION}.tar.gz" \
   && rm -f samourai-dojo-${BLESK_DOJO_VERSION}* \
   && patch -p1 < cookie.patch \
+  && patch -p1 < npmroot.patch \
   && npm install --no-audit --no-fund --no-update-notifier \
-  && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js
+  && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js \
+  && npm install --no-audit --no-fund --no-update-notifier \
+    pm2 \
+  && sed -Ei 's~#!/usr/bin/env node~#!/nodejs/bin/node~' ./node_modules/pm2/bin/pm2-runtime
 
-FROM node:24-alpine AS runner
+
+FROM gcr.io/distroless/nodejs24-debian13:nonroot AS runner
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 ENV NODE_ENV=production
 
-# hadolint ignore=DL3016,DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash \
-  && npm install --global --no-audit --no-fund --no-update-notifier \
-    pm2
+COPY --from=builder /opt/dojo/keys/index-example.js /home/nonroot/dojo/
 
-ARG BLESK_DOJO_USERNAME
-ARG BLESK_DOJO_UID
-ARG BLESK_DOJO_GID
-ARG BLESK_DOJO_HOME
-ARG BLESK_TOR_USERNAME
-ARG BLESK_TOR_GID
-ARG BLESK_BITCOINCORE_USERNAME
-ARG BLESK_BITCOINCORE_GID
+COPY --from=builder /opt/dojo/ /home/nonroot/dojo/
+COPY pm2.config.cjs /home/nonroot/dojo/
 
-RUN addgroup -S \
-    -g "$BLESK_DOJO_GID" \
-    "$BLESK_DOJO_USERNAME" \
-  && addgroup -S \
-    -g "$BLESK_TOR_GID" \
-    "$BLESK_TOR_USERNAME" \
-  && addgroup -S \
-    -g "$BLESK_BITCOINCORE_GID" \
-    "$BLESK_BITCOINCORE_USERNAME" \
-  && adduser -S \
-    -h "$BLESK_DOJO_HOME" \
-    -u "$BLESK_DOJO_UID" \
-    -G "$BLESK_DOJO_USERNAME" \
-    "$BLESK_DOJO_USERNAME" \
-  && addgroup "$BLESK_DOJO_USERNAME" "$BLESK_TOR_USERNAME" \
-  && addgroup "$BLESK_DOJO_USERNAME" "$BLESK_BITCOINCORE_USERNAME"
+COPY --from=builder /usr/bin/sh /usr/bin/getconf /bin/
 
-USER "$BLESK_DOJO_USERNAME"
-
-WORKDIR "$BLESK_DOJO_HOME"
-
-COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/ ./dojo/
-COPY --from=builder --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" /opt/dojo/keys/index-example.js ./
-COPY --chown="${BLESK_DOJO_UID}:${BLESK_DOJO_GID}" pm2.config.cjs ./dojo/
-
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+COPY docker-entrypoint.mjs /usr/local/bin/
+ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.mjs" ]
 
 ARG BLESK_DOJO_PORT_API
 ARG BLESK_DOJO_PORT_PUSHTX

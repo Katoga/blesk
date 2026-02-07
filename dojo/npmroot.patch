@@ -1,0 +1,77 @@
+From d3b80a38aa57fe28bc4c62e4bd4b0b998a004959 Mon Sep 17 00:00:00 2001
+From: Katoga <katoga.cz@hotmail.com>
+Date: Sun, 8 Feb 2026 11:01:28 +0100
+Subject: [PATCH] Remove the need to run npm
+
+---
+ lib/auth/auth-rest-api.js              | 3 +--
+ lib/bitcoind-rpc/fees.js               | 3 +--
+ lib/remote-importer/remote-importer.js | 3 +--
+ 3 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/lib/auth/auth-rest-api.js b/lib/auth/auth-rest-api.js
+index 18a8965..a93d9a6 100644
+--- a/lib/auth/auth-rest-api.js
++++ b/lib/auth/auth-rest-api.js
+@@ -3,7 +3,6 @@
+  * Copyright © 2019 – Katana Cryptographic Ltd. All Rights Reserved.
+  */
+
+-import { execSync } from 'child_process'
+ import path from 'path'
+ import crypto from 'crypto'
+ import QuickLRU from 'quick-lru'
+@@ -138,7 +137,7 @@ class AuthRestApi {
+      */
+     async initIpc() {
+         try {
+-            const NpmRoot = execSync('npm root -g').toString('utf8')
++            const NpmRoot = keys.pm2_node_modules_root || path.join(__dirname, '..', '..', 'node_modules')
+             const pm2Module = await import(path.join(NpmRoot, 'pm2', 'index.js'))
+             const pm2 = pm2Module.default
+
+diff --git a/lib/bitcoind-rpc/fees.js b/lib/bitcoind-rpc/fees.js
+index f5159ad..538ba14 100644
+--- a/lib/bitcoind-rpc/fees.js
++++ b/lib/bitcoind-rpc/fees.js
+@@ -3,7 +3,6 @@
+  * Copyright © 2019 – Katana Cryptographic Ltd. All Rights Reserved.
+  */
+
+-import { execSync } from 'child_process'
+ import path from 'path'
+
+ import errors from '../errors.js'
+@@ -66,7 +65,7 @@ class Fees {
+      */
+     async initIpc() {
+         try {
+-            const NpmRoot = execSync('npm root -g').toString('utf8')
++            const NpmRoot = keys.pm2_node_modules_root || path.join(__dirname, '..', '..', 'node_modules')
+             const pm2Module = await import(path.join(NpmRoot, 'pm2', 'index.js'))
+             const pm2 = pm2Module.default
+
+diff --git a/lib/remote-importer/remote-importer.js b/lib/remote-importer/remote-importer.js
+index 6841e2b..824b7c8 100644
+--- a/lib/remote-importer/remote-importer.js
++++ b/lib/remote-importer/remote-importer.js
+@@ -3,7 +3,6 @@
+  * Copyright © 2019 – Katana Cryptographic Ltd. All Rights Reserved.
+  */
+
+-import { execSync } from 'child_process'
+ import path from 'path'
+
+ import Logger from '../logger.js'
+@@ -49,7 +48,7 @@ class RemoteImporter {
+      */
+     async initIpc() {
+         try {
+-            const NpmRoot = execSync('npm root -g').toString('utf8')
++            const NpmRoot = keys.pm2_node_modules_root || path.join(__dirname, '..', '..', 'node_modules')
+             const pm2Module = await import(path.join(NpmRoot, 'pm2', 'index.js'))
+             const pm2 = pm2Module.default
+
+--
+2.53.0
+

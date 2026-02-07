@@ -1,7 +1,7 @@
 const path = require('path')
 
 const NAMESPACE = 'mainnet'
-const INTERPRETER = 'node'
+const INTERPRETER = '/nodejs/bin/node'
 
 module.exports = {
   apps: [
