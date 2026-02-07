@@ -15,6 +15,7 @@ docker compose up
 - [Electrs]
 - [BTC RPC Explorer]
 - [Samourai Dojo] with [Nginx] reverse proxy
+- [LND]
 
 [Ligntning Network]: https://en.wikipedia.org/wiki/Lightning_Network
 [Docker Compose]: https://docs.docker.com/compose/
@@ -24,3 +25,4 @@ docker compose up
 [BTC RPC Explorer]: https://github.com/Dojo-Open-Source-Project/btc-rpc-explorer
 [Samourai Dojo]: https://github.com/Dojo-Open-Source-Project/samourai-dojo
 [Nginx]: https://nginx.org/
+[LND]: https://github.com/lightningnetwork/lnd
