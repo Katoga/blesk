@@ -101,20 +101,33 @@ services:
       context: ./bitcoincore
       args:
         BLESK_BITCOINCORE_VERSION:
-        BLESK_BITCOINCORE_USERNAME:
-        BLESK_BITCOINCORE_UID:
-        BLESK_BITCOINCORE_GID:
-        BLESK_BITCOINCORE_HOME:
+        BLESK_BITCOINCORE_COOKIE_DIR:
         BLESK_BITCOINCORE_PORT_RPC:
         BLESK_BITCOINCORE_PORT_P2P:
         BLESK_BITCOINCORE_PORT_ZMQ_BLOCK:
         BLESK_BITCOINCORE_PORT_ZMQ_TX:
-        BLESK_TOR_USERNAME:
-        BLESK_TOR_GID:
-    user: $BLESK_BITCOINCORE_USERNAME
+    command:
+      - --conf=/home/nonroot/bitcoin.conf
+      - --whitelist=$BLESK_NET_INTERNAL_IPV6
+      - --bind=$BLESK_BITCOINCORE_IPV6
+      - --port=$BLESK_BITCOINCORE_PORT_P2P
+      - --proxy=[${BLESK_TOR_IPV6}]:${BLESK_TOR_PORT_SOCKS}
+      - --maxconnections=$BLESK_BITCOINCORE_MAX_CONNECTIONS
+      - --maxuploadtarget=$BLESK_BITCOINCORE_MAX_UPLOAD_TARGET
+      - --zmqpubrawblock=tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_BLOCK}
+      - --zmqpubrawtx=tcp://[${BLESK_BITCOINCORE_IPV6}]:${BLESK_BITCOINCORE_PORT_ZMQ_TX}
+      - --rpcallowip=$BLESK_NET_INTERNAL_IPV6
+      - --rpcbind=$BLESK_BITCOINCORE_IPV6
+      - --rpcport=$BLESK_BITCOINCORE_PORT_RPC
+      - --rpccookiefile=${BLESK_BITCOINCORE_COOKIE_DIR}/.cookie
+      - --rpccookieperms=group
+      - --nosettings
+      # only for initial blocks sync
+      # - --blocksonly=1
+      # - --dbcache="$BLESK_BITCOINCORE_DB_CACHE"
     volumes:
-      - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
-      - data-tor:${BLESK_TOR_HOME}:ro
+      - data-bitcoincore:/home/nonroot/.bitcoin
+      - cookie-bitcoincore:$BLESK_BITCOINCORE_COOKIE_DIR
     networks:
       internal:
         ipv6_address: ${BLESK_BITCOINCORE_IPV6}
@@ -341,6 +354,7 @@ volumes:
   data-tor:
   cookie-tor:
   data-bitcoincore:
+  cookie-bitcoincore:
   data-electrs:
   data-mariadb:
   data-lnd:

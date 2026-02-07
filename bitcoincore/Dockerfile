@@ -1,111 +1,61 @@
-FROM alpine:3 AS builder-bitcoincore
+FROM debian:trixie-slim AS builder
 
 ARG BLESK_BITCOINCORE_VERSION
 
-# hadolint ignore=DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash \
-    boost-dev \
-    build-base \
-    capnproto-dev \
-    curl \
-    cmake \
+# hadolint ignore=DL3008
+RUN apt-get update \
+  && apt-get upgrade --assume-yes --no-install-recommends \
+  && apt-get install --assume-yes --no-install-recommends \
+    ca-certificates \
     gnupg \
     jq \
-    libevent-dev \
-    sqlite-dev \
-    tar \
-    zeromq-dev
+    wget
 
 SHELL [ "/bin/bash", "-o", "pipefail", "-euc" ]
 
 WORKDIR /opt/bitcoincore
 
-ENV NO_QT=1
-ENV CMAKE_BUILD_TYPE=Release
-
-RUN tarball="bitcoin-${BLESK_BITCOINCORE_VERSION}.tar.gz" \
-  && wget -q "https://bitcoincore.org/bin/bitcoin-core-${BLESK_BITCOINCORE_VERSION}/${tarball}" \
-  && wget -q "https://bitcoincore.org/bin/bitcoin-core-${BLESK_BITCOINCORE_VERSION}/SHA256SUMS" \
-  && wget -q "https://bitcoincore.org/bin/bitcoin-core-${BLESK_BITCOINCORE_VERSION}/SHA256SUMS.asc" \
-  && wget -q -O - https://api.github.com/repositories/355107265/contents/builder-keys \
+RUN arch="$(uname -m)" \
+  && tarball="bitcoin-${BLESK_BITCOINCORE_VERSION}-${arch}-linux-gnu.tar.gz" \
+  && wget -nv "https://bitcoincore.org/bin/bitcoin-core-${BLESK_BITCOINCORE_VERSION}/${tarball}" \
+  && wget -nv "https://bitcoincore.org/bin/bitcoin-core-${BLESK_BITCOINCORE_VERSION}/SHA256SUMS" \
+  && wget -nv "https://bitcoincore.org/bin/bitcoin-core-${BLESK_BITCOINCORE_VERSION}/SHA256SUMS.asc" \
+  && sha256sum --ignore-missing --check SHA256SUMS \
+  && wget -nv -O - https://api.github.com/repositories/355107265/contents/builder-keys \
   | jq -r '.[].download_url' \
   | while read -r url; do \
-    wget -q -O - "$url" \
+    wget -nv -O - "$url" \
     | gpg --import; \
   done \
   && gpg --verify SHA256SUMS.asc \
-  && grep "$tarball" "SHA256SUMS" \
-    | sha256sum -cs - \
+  && sha256sum --check --status --ignore-missing SHA256SUMS \
   && tar -xvz \
-    --strip-components 1 \
+    --strip-components=1 \
     -f "$tarball" \
-  && rm -f \
-    "$tarball" \
-    SHA256SUMS \
-    SHA256SUMS.asc \
-  && cmake \
-    -B build \
-    -LH \
-  && cmake \
-    -B build \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_FLAGS="-g0" \
-    -DWITH_ZMQ=ON \
-  && cmake \
-    --build build \
-    -j "$(nproc)" \
-  && ctest \
-    --test-dir build \
-    -j "$(nproc)" \
-  && cmake \
-    --install build
+  # explicitly enable config options
+  && sed -Ei 's~^#?(disablewallet|listen|server|txindex)=.+$~\1=1~' ./bitcoin.conf \
+  # explicitly disable config options
+  && sed -Ei 's~^#?(discover|dns(seed)?|natpmp)=.+$~\1=0~' ./bitcoin.conf \
+  # complex settings
+  && sed -Ei 's~^#?(onlynet)=.+$~\1=onion~' ./bitcoin.conf
 
+# empty dir needed for seting permission on data dir in runner
+RUN mkdir /empty
 
-FROM alpine:3 AS runner
+FROM gcr.io/distroless/cc-debian13:nonroot AS runner
 
-# hadolint ignore=DL3018
-RUN apk --no-cache upgrade \
-  && apk --no-cache add \
-    bash \
-    boost \
-    gettext-envsubst \
-    jq \
-    libevent \
-    zeromq
+# Prevent excessive memory usage
+ENV MALLOC_ARENA_MAX=1
 
-ARG BLESK_BITCOINCORE_USERNAME
-ARG BLESK_BITCOINCORE_UID
-ARG BLESK_BITCOINCORE_GID
-ARG BLESK_BITCOINCORE_HOME
-ARG BLESK_TOR_USERNAME
-ARG BLESK_TOR_GID
+# just to set owner of the dir where volume is mounted
+ARG BLESK_BITCOINCORE_COOKIE_DIR
+COPY --from=builder --chown=nonroot:nonroot /empty/ ${BLESK_BITCOINCORE_COOKIE_DIR}
+COPY --from=builder --chown=nonroot:nonroot /empty/ /home/nonroot/.bitcoin/
 
-RUN addgroup -S \
-    -g "$BLESK_BITCOINCORE_GID" \
-    "$BLESK_BITCOINCORE_USERNAME" \
-  && addgroup -S \
-    -g "$BLESK_TOR_GID" \
-    "$BLESK_TOR_USERNAME" \
-  && adduser -S \
-    -h "$BLESK_BITCOINCORE_HOME" \
-    -u "$BLESK_BITCOINCORE_UID" \
-    -G "$BLESK_BITCOINCORE_USERNAME" \
-    "$BLESK_BITCOINCORE_USERNAME" \
-  && addgroup "$BLESK_BITCOINCORE_USERNAME" "$BLESK_TOR_USERNAME" \
-  && mkdir "${BLESK_BITCOINCORE_HOME}/.bitcoin" \
-  && chown -h "${BLESK_BITCOINCORE_USERNAME}:${BLESK_BITCOINCORE_USERNAME}" "${BLESK_BITCOINCORE_HOME}/.bitcoin"
+COPY --from=builder /opt/bitcoincore/bin/bitcoin-cli /opt/bitcoincore/bin/bitcoind /usr/local/bin/
+COPY --from=builder /opt/bitcoincore/bitcoin.conf /home/nonroot/
 
-USER "$BLESK_BITCOINCORE_USERNAME"
-
-WORKDIR "$BLESK_BITCOINCORE_HOME"
-
-COPY --from=builder-bitcoincore /usr/local/bin/bitcoin* /usr/local/bin/
-COPY --chown="${BLESK_BITCOINCORE_UID}:${BLESK_BITCOINCORE_GID}" bitcoin.conf.template "./"
-
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT [ "/usr/local/bin/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/bin/bitcoind" ]
 
 ARG BLESK_BITCOINCORE_PORT_RPC
 ARG BLESK_BITCOINCORE_PORT_P2P
