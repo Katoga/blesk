@@ -142,22 +142,23 @@ services:
       context: ./electrs
       args:
         BLESK_ELECTRS_VERSION:
-        BLESK_ELECTRS_USERNAME:
-        BLESK_ELECTRS_UID:
-        BLESK_ELECTRS_GID:
-        BLESK_ELECTRS_HOME:
         BLESK_ELECTRS_PORT:
-        BLESK_BITCOINCORE_USERNAME:
-        BLESK_BITCOINCORE_GID:
-    user: $BLESK_ELECTRS_USERNAME
+    env_file:
+      - .env
+    command:
+      - --electrum-rpc-addr
+      - ${BLESK_ELECTRS_IPV6}:${BLESK_ELECTRS_PORT}
+      - --daemon-rpc-addr
+      - bitcoincore:${BLESK_BITCOINCORE_PORT_RPC}
+      - --daemon-p2p-addr
+      - bitcoincore:${BLESK_BITCOINCORE_PORT_P2P}
+      - --index-batch-size
+      - $BLESK_ELECTRS_BATCH_SIZE
+      - --index-lookup-limit
+      - $BLESK_ELECTRS_LOOKUP_LIMIT
     volumes:
-      - data-electrs:${BLESK_ELECTRS_HOME}
-      - data-bitcoincore:${BLESK_ELECTRS_HOME}/.bitcoin:ro
-      - type: tmpfs
-        target: /etc/electrs
-        tmpfs:
-          size: 1M
-          mode: 0777
+      - data-electrs:/home/nonroot/
+      - cookie-bitcoincore:/home/nonroot/.bitcoin/:ro
     networks:
       internal:
         ipv6_address: ${BLESK_ELECTRS_IPV6}

@@ -1,0 +1,3 @@
+db_dir = "/home/nonroot/db"
+
+log_filters = "INFO"
