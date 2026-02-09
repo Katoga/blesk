@@ -70,7 +70,8 @@ services:
       internal:
         ipv6_address: ${BLESK_BITCOINCORE_IPV6}
     depends_on:
-      - tor
+      tor:
+        condition: service_started
   electrs:
     <<: *svc
     container_name: electrs
@@ -99,7 +100,9 @@ services:
       internal:
         ipv6_address: ${BLESK_ELECTRS_IPV6}
     depends_on:
-      - bitcoincore
+      bitcoincore:
+        condition: service_started
+        restart: true
   explorer:
     <<: *svc
     container_name: explorer
@@ -133,8 +136,10 @@ services:
       internal:
         ipv6_address: ${BLESK_EXPLORER_IPV6}
     depends_on:
-      - bitcoincore
-      - electrs
+      bitcoincore:
+        condition: service_started
+      electrs:
+        condition: service_started
   mariadb:
     <<: *svc
     container_name: mariadb
@@ -209,10 +214,16 @@ services:
       internal:
         ipv6_address: ${BLESK_DOJO_IPV6}
     depends_on:
-      - tor
-      - bitcoincore
-      - electrs
-      - mariadb
+      tor:
+        condition: service_started
+      bitcoincore:
+        condition: service_started
+        restart: true
+      electrs:
+        condition: service_started
+      mariadb:
+        condition: service_started
+        restart: true
   nginx:
     <<: *svc
     container_name: nginx
@@ -271,8 +282,11 @@ services:
       internal:
         ipv6_address: ${BLESK_LND_IPV6}
     depends_on:
-      - tor
-      - bitcoincore
+      tor:
+        condition: service_started
+      bitcoincore:
+        condition: service_started
+        restart: true
 
 volumes:
   data-tor:
