@@ -72,6 +72,27 @@ services:
     depends_on:
       tor:
         condition: service_started
+  bitcoincore-ready:
+    <<: *svc
+    container_name: bitcoincore-ready
+    image: blesk/bitcoincore-ready
+    build:
+      context: ./file-ready
+      args:
+        BLESK_FILE_READY_USERNAME: $BLESK_BITCOINCORE_USERNAME
+        BLESK_FILE_READY_UID: $BLESK_BITCOINCORE_UID
+        BLESK_FILE_READY_GID: $BLESK_BITCOINCORE_GID
+        BLESK_FILE_READY_HOME: $BLESK_BITCOINCORE_HOME
+    user: $BLESK_BITCOINCORE_USERNAME
+    restart: no
+    command:
+      - ${BLESK_BITCOINCORE_HOME}/.bitcoin/.cookie
+    volumes:
+      - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
+    depends_on:
+      bitcoincore:
+        condition: service_started
+        restart: true
   electrs:
     <<: *svc
     container_name: electrs
@@ -100,8 +121,8 @@ services:
       internal:
         ipv6_address: ${BLESK_ELECTRS_IPV6}
     depends_on:
-      bitcoincore:
-        condition: service_started
+      bitcoincore-ready:
+        condition: service_completed_successfully
         restart: true
   explorer:
     <<: *svc
@@ -136,8 +157,8 @@ services:
       internal:
         ipv6_address: ${BLESK_EXPLORER_IPV6}
     depends_on:
-      bitcoincore:
-        condition: service_started
+      bitcoincore-ready:
+        condition: service_completed_successfully
       electrs:
         condition: service_started
   mariadb:
@@ -239,8 +260,8 @@ services:
     depends_on:
       tor:
         condition: service_started
-      bitcoincore:
-        condition: service_started
+      bitcoincore-ready:
+        condition: service_completed_successfully
         restart: true
       electrs:
         condition: service_started
@@ -330,8 +351,8 @@ services:
     depends_on:
       tor:
         condition: service_started
-      bitcoincore:
-        condition: service_started
+      bitcoincore-ready:
+        condition: service_completed_successfully
         restart: true
 
 volumes:
