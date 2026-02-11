@@ -2,22 +2,9 @@
 
 set -euo pipefail
 
-# Prevent excessive memory usage
-export MALLOC_ARENA_MAX=1
-
-envsubst < "${BLESK_BITCOINCORE_HOME}/bitcoin.conf.template" > "${BLESK_BITCOINCORE_HOME}/.bitcoin/bitcoin.conf"
-chmod 0600 "${BLESK_BITCOINCORE_HOME}/.bitcoin/bitcoin.conf"
-
 bitcoind_options=(
   -externalip="$(cat "${BLESK_TOR_ONIONS}/${BLESK_BITCOINCORE_USERNAME}/hostname")"
 )
-if [[ "${BLESK_BITCOINCORE_INITIAL_RUN:-0}" -eq 1 ]]; then
-  # Initial block download optimizations
-  bitcoind_options+=(
-    -dbcache="$BLESK_BITCOINCORE_DB_CACHE"
-    -blocksonly=1
-  )
-fi
 
 # Mimic Bitcoincore log message
 log_with_date() {
