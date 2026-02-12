@@ -9,6 +9,7 @@ jq \
   --arg configPath "${BLESK_RTL_HOME}/.lnd/lnd.conf" \
   --arg lnServerUrl "http://lnd:${BLESK_LND_PORT_REST}" \
   --arg blockExplorerUrl "https://explorer:${BLESK_EXPLORER_PORT_SSL}" \
+  --arg channelBackupPath "${BLESK_RTL_HOME}/backup" \
   '
     .multiPass |= $multiPass
     |
@@ -21,6 +22,8 @@ jq \
     .nodes[0].settings.lnServerUrl |= $lnServerUrl
     |
     .nodes[0].settings.blockExplorerUrl |= $blockExplorerUrl
+    |
+    .nodes[0].settings.channelBackupPath |= $channelBackupPath
   ' \
   "${BLESK_RTL_HOME}/rtl/Sample-RTL-Config.json" \
   > "${RTL_CONFIG_PATH}/RTL-Config.json"
