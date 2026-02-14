@@ -247,6 +247,29 @@ services:
       mariadb-listens:
         condition: service_completed_successfully
         restart: true
+  dojo-listens:
+    <<: *svc
+    container_name: dojo-listens
+    image: blesk/dojo-listens
+    build:
+      context: ./port-listens
+      args:
+        BLESK_PORT_LISTENS_USERNAME: nonroot
+        BLESK_PORT_LISTENS_UID: 65532
+        BLESK_PORT_LISTENS_GID: 65532
+        BLESK_PORT_LISTENS_HOME: /home/nonroot
+    user: nonroot
+    restart: no
+    command:
+      - dojo
+      - $BLESK_DOJO_PORT_API
+    networks:
+      internal:
+        ipv6_address: ${BLESK_DOJO_LISTENS_IPV6}
+    depends_on:
+      dojo:
+        condition: service_started
+        restart: true
   nginx:
     <<: *svc
     container_name: nginx
