@@ -167,6 +167,29 @@ services:
     networks:
       internal:
         ipv6_address: ${BLESK_MARIADB_IPV6}
+  mariadb-listens:
+    <<: *svc
+    container_name: mariadb-listens
+    image: blesk/mariadb-listens
+    build:
+      context: ./port-listens
+      args:
+        BLESK_PORT_LISTENS_USERNAME: nonroot
+        BLESK_PORT_LISTENS_UID: 65532
+        BLESK_PORT_LISTENS_GID: 65532
+        BLESK_PORT_LISTENS_HOME: /home/nonroot
+    user: nonroot
+    restart: no
+    command:
+      - mariadb
+      - $BLESK_MARIADB_PORT
+    networks:
+      internal:
+        ipv6_address: ${BLESK_MARIADB_LISTENS_IPV6}
+    depends_on:
+      mariadb:
+        condition: service_started
+        restart: true
   dojo:
     <<: *svc
     container_name: dojo
@@ -221,8 +244,8 @@ services:
         restart: true
       electrs:
         condition: service_started
-      mariadb:
-        condition: service_started
+      mariadb-listens:
+        condition: service_completed_successfully
         restart: true
   nginx:
     <<: *svc
