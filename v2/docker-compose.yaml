@@ -1,0 +1,89 @@
+services:
+  _svc: &svc
+    container_name: svc
+    image: blesk/svc
+    pull_policy: never
+    build:
+      context: _svc
+    read_only: true
+    restart: always
+    stop_grace_period: 1m
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    env_file:
+      - ./.env
+    networks:
+      internal:
+
+  init:
+    container_name: init
+    image: gcr.io/distroless/base-debian13:debug
+    pull_policy: weekly
+    read_only: true
+    restart: no
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "10"
+    network_mode: none
+    volumes:
+      - cookies:${BLESK_DIR_COOKIES}
+    command:
+      - -euc
+      - |
+        mkdir -p "${BLESK_TOR_DIR_COOKIE}"
+        chown -R nonroot:nonroot "${BLESK_TOR_DIR_COOKIE}"
+
+  tor:
+    <<: *svc
+    container_name: tor
+    image: blesk/tor
+    build:
+      context: ./tor
+      args:
+        BLESK_TOR_VERSION:
+    command:
+      - --SocksPort
+      - >-
+        [${BLESK_TOR_NET_ADDRESS}]:${BLESK_TOR_NET_PORT_SOCKS} OnionTrafficOnly ExtendedErrors
+      - --SocksPolicy
+      - accept6 ${BLESK_NET_INTERNAL}
+      - --DataDirectory
+      - ${BLESK_DIR_HOME}/.tor
+      - --ControlPort
+      - >-
+        [${BLESK_TOR_NET_ADDRESS}]:${BLESK_TOR_NET_PORT_CONTROL}
+      - --CookieAuthFile
+      - ${BLESK_TOR_DIR_COOKIE}/control_auth_cookie
+    volumes:
+      - tor:${BLESK_DIR_HOME}
+      - cookies:${BLESK_DIR_COOKIES}
+    networks:
+      internal:
+        ipv6_address: ${BLESK_TOR_NET_ADDRESS}
+      external:
+    depends_on:
+      init:
+        condition: service_completed_successfully
+
+volumes:
+  cookies:
+  tor:
+
+networks:
+  external: &network
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+      com.docker.network.enable_ipv4: "false"
+  internal:
+    <<: *network
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: ${BLESK_NET_INTERNAL}
