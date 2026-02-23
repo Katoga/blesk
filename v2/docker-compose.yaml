@@ -37,6 +37,8 @@ services:
       - |
         mkdir -p "${BLESK_TOR_DIR_COOKIE}"
         chown -R nonroot:nonroot "${BLESK_TOR_DIR_COOKIE}"
+        mkdir -p "${BLESK_BITCOINCORE_DIR_COOKIE}"
+        chown -R nonroot:nonroot "${BLESK_BITCOINCORE_DIR_COOKIE}"
 
   tor:
     <<: *svc
@@ -70,9 +72,49 @@ services:
       init:
         condition: service_completed_successfully
 
+  bitcoincore:
+    <<: *svc
+    container_name: bitcoincore
+    image: blesk/bitcoincore
+    build:
+      context: ./bitcoincore
+      args:
+        BLESK_BITCOINCORE_VERSION:
+    command:
+      - --conf=/etc/bitcoincore/bitcoin.conf
+      - --whitelist=${BLESK_NET_INTERNAL}
+      - --bind=${BLESK_BITCOINCORE_NET_ADDRESS}
+      - --port=${BLESK_BITCOINCORE_NET_PORT_P2P}
+      - --proxy=[${BLESK_TOR_NET_ADDRESS}]:${BLESK_TOR_NET_PORT_SOCKS}
+      - --maxconnections=${BLESK_BITCOINCORE_MAX_CONNECTIONS}
+      - --maxuploadtarget=${BLESK_BITCOINCORE_MAX_UPLOAD_TARGET}
+      - --zmqpubrawblock=tcp://[${BLESK_BITCOINCORE_NET_ADDRESS}]:${BLESK_BITCOINCORE_NET_PORT_ZMQ_BLOCK}
+      - --zmqpubrawtx=tcp://[${BLESK_BITCOINCORE_NET_ADDRESS}]:${BLESK_BITCOINCORE_NET_PORT_ZMQ_TX}
+      - --rpcallowip=${BLESK_NET_INTERNAL}
+      - --rpcbind=${BLESK_BITCOINCORE_NET_ADDRESS}
+      - --rpcport=${BLESK_BITCOINCORE_NET_PORT_RPC}
+      - --rpccookiefile=${BLESK_BITCOINCORE_COOKIE}
+      - --rpccookieperms=group
+      - --nosettings
+      # only for initial blocks sync
+      # - --blocksonly=1
+      # - --dbcache="${BLESK_BITCOINCORE_DB_CACHE}"
+    volumes:
+      - bitcoincore:${BLESK_DIR_HOME}
+      - cookies:${BLESK_DIR_COOKIES}
+    networks:
+      internal:
+        ipv6_address: ${BLESK_BITCOINCORE_NET_ADDRESS}
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      tor:
+        condition: service_started
+
 volumes:
   cookies:
   tor:
+  bitcoincore:
 
 networks:
   external: &network
