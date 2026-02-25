@@ -111,10 +111,49 @@ services:
       tor:
         condition: service_started
 
+  electrs:
+    <<: *svc
+    container_name: electrs
+    image: blesk/electrs
+    build:
+      context: ./electrs
+      args:
+        BLESK_ELECTRS_VERSION:
+        BLESK_ELECTRS_SSH_KEY_FINGERPRINT:
+    command:
+      - --db-dir
+      - ${BLESK_DIR_HOME}/db
+      - --cookie-file
+      - ${BLESK_BITCOINCORE_COOKIE}
+      - --electrum-rpc-addr
+      - ${BLESK_ELECTRS_NET_ADDRESS}:${BLESK_ELECTRS_NET_PORT}
+      - --daemon-rpc-addr
+      - bitcoincore:${BLESK_BITCOINCORE_NET_PORT_RPC}
+      - --daemon-p2p-addr
+      - bitcoincore:${BLESK_BITCOINCORE_NET_PORT_P2P}
+      - --index-batch-size
+      - ${BLESK_ELECTRS_BATCH_SIZE}
+      - --index-lookup-limit
+      - ${BLESK_ELECTRS_LOOKUP_LIMIT}
+      - --log-filters
+      - INFO
+    volumes:
+      - electrs:${BLESK_DIR_HOME}
+      - cookies:${BLESK_DIR_COOKIES}
+    read_only: false
+    networks:
+      internal:
+        ipv6_address: ${BLESK_ELECTRS_NET_ADDRESS}
+    depends_on:
+      bitcoincore:
+        condition: service_started
+        restart: true
+
 volumes:
   cookies:
   tor:
   bitcoincore:
+  electrs:
 
 networks:
   external: &network
