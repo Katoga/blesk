@@ -149,6 +149,47 @@ services:
         condition: service_started
         restart: true
 
+  explorer:
+    <<: *svc
+    container_name: explorer
+    image: blesk/explorer
+    build:
+      context: ./explorer
+      args:
+        BLESK_DIR_HOME:
+        BLESK_EXPLORER_VERSION:
+        BLESK_EXPLORER_CHECKSUM:
+    command:
+      - --host
+      - ${BLESK_EXPLORER_NET_ADDRESS}
+      - --port
+      - ${BLESK_EXPLORER_NET_PORT}
+      - --bitcoind-port
+      - ${BLESK_BITCOINCORE_NET_PORT_RPC}
+      - --bitcoind-cookie
+      - ${BLESK_BITCOINCORE_COOKIE}
+      - --electrum-servers
+      - tcp://electrs:${BLESK_ELECTRS_NET_PORT}
+      - --slow-device-mode
+      - ${BLESK_EXPLORER_SLOW_DEVICE_MODE}
+      - --filesystem-cache-dir
+      - ${BLESK_EXPLORER_CACHE_DIR}
+    volumes:
+      - cookies:${BLESK_DIR_COOKIES}:ro
+      - type: tmpfs
+        target: ${BLESK_EXPLORER_CACHE_DIR}
+        tmpfs:
+          size: 1M
+          mode: 0777
+    networks:
+      internal:
+        ipv6_address: ${BLESK_EXPLORER_NET_ADDRESS}
+    depends_on:
+      bitcoincore:
+        condition: service_started
+      electrs:
+        condition: service_started
+
 volumes:
   cookies:
   tor:
