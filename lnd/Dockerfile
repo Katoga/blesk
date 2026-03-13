@@ -33,7 +33,7 @@ RUN arch="${TARGETPLATFORM##linux/}" \
   && mv ./lnd ./lncli /usr/local/bin/
 
 
-FROM golang:1.25-alpine AS builder-lndinit
+FROM golang:1.26-alpine AS builder-lndinit
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -57,6 +57,7 @@ RUN git clone \
   && wget -q -O - "https://github.com/web-flow.gpg" \
     | gpg --import \
   && git verify-commit "v${BLESK_LNDINIT_VERSION}-beta" \
+  && go mod tidy -go="$(go version | awk '{ print $3 }' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" \
   && go build \
     -tags 'netgo' \
     -ldflags "-w -s -linkmode 'external' -extldflags '-static'" \
