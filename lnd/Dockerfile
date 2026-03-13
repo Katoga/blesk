@@ -64,7 +64,7 @@ RUN git clone \
   && mv ./lndinit /usr/local/bin/
 
 
-FROM golang:1.25-alpine AS builder-lndconnect
+FROM golang:1.26-alpine AS builder-lndconnect
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -88,6 +88,7 @@ RUN tarball="v${BLESK_LNDCONNECT_VERSION}.tar.gz" \
     --strip-components 1 \
     -f "$tarball" \
   && rm -f "$tarball" \
+  && go mod tidy -go="$(go version | awk '{ print $3 }' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')" \
   && go build -o "${GOPATH}/bin/" -tags 'netgo' -ldflags "-w -s -linkmode 'external' -extldflags '-static'" \
   && mv "${GOPATH}/bin/lndconnect" /usr/local/bin
 
