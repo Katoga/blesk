@@ -16,7 +16,7 @@ services:
     env_file:
       - ./.env
     networks:
-      internal:
+      private:
   tor:
     <<: *svc
     container_name: tor
@@ -41,9 +41,9 @@ services:
           size: 1M
           mode: 0777
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_TOR_IPV6}
-      external:
+      public:
   bitcoincore:
     <<: *svc
     container_name: bitcoincore
@@ -67,7 +67,7 @@ services:
       - data-bitcoincore:${BLESK_BITCOINCORE_HOME}/.bitcoin
       - data-tor:${BLESK_TOR_HOME}:ro
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_BITCOINCORE_IPV6}
     depends_on:
       tor:
@@ -97,7 +97,7 @@ services:
           size: 1M
           mode: 0777
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_ELECTRS_IPV6}
     depends_on:
       bitcoincore:
@@ -133,7 +133,7 @@ services:
           size: 1M
           mode: 0777
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_EXPLORER_IPV6}
     depends_on:
       bitcoincore:
@@ -165,7 +165,7 @@ services:
           size: 1M
           mode: 0777
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_MARIADB_IPV6}
   dojo:
     <<: *svc
@@ -211,7 +211,7 @@ services:
           size: 1M
           mode: 0777
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_DOJO_IPV6}
     depends_on:
       tor:
@@ -246,7 +246,7 @@ services:
           size: 1M
           mode: 0777
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_NGINX_IPV6}
   lnd:
     <<: *svc
@@ -279,7 +279,7 @@ services:
       - data-bitcoincore:${BLESK_LND_HOME}/.bitcoin:ro
       - ${BLESK_LND_SCB_BACKUP_DIR}:${BLESK_LND_SCB_BACKUP_DIR}
     networks:
-      internal:
+      private:
         ipv6_address: ${BLESK_LND_IPV6}
     depends_on:
       tor:
@@ -296,12 +296,12 @@ volumes:
   data-lnd:
 
 networks:
-  external:
+  public:
     driver: bridge
     driver_opts:
       com.docker.network.enable_ipv6: "true"
       com.docker.network.enable_ipv4: "false"
-  internal:
+  private:
     driver: bridge
     internal: true
     driver_opts:
