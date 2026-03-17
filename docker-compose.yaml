@@ -298,15 +298,13 @@ volumes:
 networks:
   public:
     driver: bridge
-    driver_opts:
-      com.docker.network.enable_ipv6: "true"
-      com.docker.network.enable_ipv4: "false"
+    enable_ipv6: true
+    enable_ipv4: false
   private:
     driver: bridge
     internal: true
-    driver_opts:
-      com.docker.network.enable_ipv6: "true"
-      com.docker.network.enable_ipv4: "false"
+    enable_ipv6: true
+    enable_ipv4: false
     ipam:
       driver: default
       config:
