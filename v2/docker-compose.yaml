@@ -156,9 +156,9 @@ services:
     build:
       context: ./explorer
       args:
-        BLESK_DIR_HOME:
-        BLESK_EXPLORER_VERSION:
-        BLESK_EXPLORER_CHECKSUM:
+        BLESK_DIR_HOME: "${BLESK_DIR_HOME}"
+        BLESK_EXPLORER_VERSION: "${BLESK_EXPLORER_VERSION}"
+        BLESK_EXPLORER_CHECKSUM: "${BLESK_EXPLORER_CHECKSUM}"
     command:
       - --host
       - ${BLESK_EXPLORER_NET_ADDRESS}
