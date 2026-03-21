@@ -79,7 +79,7 @@ services:
     build:
       context: ./bitcoincore
       args:
-        BLESK_BITCOINCORE_VERSION:
+        BLESK_BITCOINCORE_VERSION: "${BLESK_BITCOINCORE_VERSION}"
     command:
       - --conf=/etc/bitcoincore/bitcoin.conf
       - --whitelist=${BLESK_NET_INTERNAL}
