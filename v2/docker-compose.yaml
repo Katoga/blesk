@@ -21,7 +21,7 @@ services:
   init:
     container_name: init
     image: gcr.io/distroless/base-debian13:debug
-    pull_policy: weekly
+    pull_policy: always
     read_only: true
     restart: no
     logging:
