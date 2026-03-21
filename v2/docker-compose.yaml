@@ -47,7 +47,7 @@ services:
     build:
       context: ./tor
       args:
-        BLESK_TOR_VERSION:
+        BLESK_TOR_VERSION: "${BLESK_TOR_VERSION}"
     command:
       - --SocksPort
       - >-
