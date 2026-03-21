@@ -23,7 +23,7 @@ services:
     image: gcr.io/distroless/base-debian13:debug
     pull_policy: always
     read_only: true
-    restart: no
+    restart: 'no'
     logging:
       driver: "json-file"
       options:
