@@ -118,8 +118,8 @@ services:
     build:
       context: ./electrs
       args:
-        BLESK_ELECTRS_VERSION:
-        BLESK_ELECTRS_SSH_KEY_FINGERPRINT:
+        BLESK_ELECTRS_VERSION: "${BLESK_ELECTRS_VERSION}"
+        BLESK_ELECTRS_SSH_KEY_FINGERPRINT: "${BLESK_ELECTRS_SSH_KEY_FINGERPRINT}"
     command:
       - --db-dir
       - ${BLESK_DIR_HOME}/db
