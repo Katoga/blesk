@@ -1,51 +1,51 @@
-From 4c9daa9e54d685b816ba96e9a4a5c88d0038729b Mon Sep 17 00:00:00 2001
-From: doitwithnotepad <doitwithnotepad@proton.me>
-Date: Sat, 9 Nov 2024 14:14:44 +0000
-Subject: [PATCH] Explicit support for bitcoind rpc cookie
+From af014cdcb3fdec0aa44a9b39b98350a8b829c4a8 Mon Sep 17 00:00:00 2001
+From: Katoga <katoga.cz@hotmail.com>
+Date: Sat, 30 May 2026 08:22:15 +0200
+Subject: [PATCH] Enable to authenticate to bitcoind via rpc cookie
 
 ---
- estimator/index.js                | 1 +
- keys/index-example.js             | 2 ++
- lib/bitcoind-rpc/rpc-client.js    | 1 +
- 4 files changed, 6 insertions(+)
+ estimator/index.js             | 1 +
+ keys/index-example.js          | 2 ++
+ lib/bitcoind-rpc/rpc-client.js | 1 +
+ 3 files changed, 4 insertions(+)
 
 diff --git a/estimator/index.js b/estimator/index.js
-index 7afd487..10aae00 100644
+index 177df74..2ec3809 100644
 --- a/estimator/index.js
 +++ b/estimator/index.js
-@@ -23,6 +23,7 @@ try {
-             port: keys.bitcoind.rpc.port,
-             username: keys.bitcoind.rpc.user,
-             password: keys.bitcoind.rpc.pass,
-+            cookie: keys.bitcoind.rpc.cookie_path
-         }
-     })
+@@ -22,6 +22,7 @@ try {
+ 			port: keys.bitcoind.rpc.port,
+ 			username: keys.bitcoind.rpc.user,
+ 			password: keys.bitcoind.rpc.pass,
++			cookie: keys.bitcoind.rpc.cookie_path,
+ 		},
+ 	});
 
 diff --git a/keys/index-example.js b/keys/index-example.js
-index 1ead8f8..5e8f71e 100644
+index 865daad..812e761 100644
 --- a/keys/index-example.js
 +++ b/keys/index-example.js
-@@ -27,6 +27,8 @@ export default {
-                 user: 'user',
-                 // Password
-                 pass: 'password',
-+                // Cookie path
-+                cookie_path: '/path/to/cookie',
-                 // IP address
-                 host: '127.0.0.1',
-                 // TCP port
+@@ -26,6 +26,8 @@ export default {
+ 				user: "user",
+ 				// Password
+ 				pass: "password",
++				// Cookie path
++				cookie_path: "/path/to/cookie",
+ 				// IP address
+ 				host: "127.0.0.1",
+ 				// TCP port
 diff --git a/lib/bitcoind-rpc/rpc-client.js b/lib/bitcoind-rpc/rpc-client.js
-index e969860..4fc44af 100644
+index ea66fff..2da0590 100644
 --- a/lib/bitcoind-rpc/rpc-client.js
 +++ b/lib/bitcoind-rpc/rpc-client.js
-@@ -29,6 +29,7 @@ export const createRpcClient = (options = {}) => {
-         protocol: 'http',
-         username: keys.bitcoind.rpc.user,
-         password: keys.bitcoind.rpc.pass,
-+        cookie: keys.bitcoind.rpc.cookie_path,
-         timeout: 2 * 60 * 1000, // 2 minutes
-         ...options
-     })
+@@ -27,6 +27,7 @@ export const createRpcClient = (options = {}) => {
+ 		protocol: "http",
+ 		username: keys.bitcoind.rpc.user,
+ 		password: keys.bitcoind.rpc.pass,
++		cookie: keys.bitcoind.rpc.cookie_path,
+ 		timeout: 2 * 60 * 1000, // 2 minutes
+ 		...options,
+ 	});
 --
-2.51.0
+2.54.0
 
