@@ -22,7 +22,7 @@ RUN ( \
       "https://tor.eff.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz" \
     || wget -q \
       -T 10 \
-      "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz" \
+      "https://mirrors.mit.edu/torproject/dist/tor-${BLESK_TOR_VERSION}.tar.gz" \
     || exit 10 \
   ) \
   && ( \
@@ -31,7 +31,7 @@ RUN ( \
       "https://tor.eff.org/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
     || wget -q \
       -T 10 \
-      "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
+      "https://mirrors.mit.edu/torproject/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
     || wget -q \
       -T 10 \
       "https://dist.torproject.org/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum" \
@@ -40,7 +40,7 @@ RUN ( \
   && ( \
     wget -q \
       -T 10 \
-      "https://mirrors.mit.edu/torproject/dist//tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
+      "https://mirrors.mit.edu/torproject/dist/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
     || wget -q \
       -T 10 \
       "https://dist.torproject.org/tor-${BLESK_TOR_VERSION}.tar.gz.sha256sum.asc" \
