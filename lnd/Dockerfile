@@ -33,7 +33,7 @@ RUN arch="${TARGETPLATFORM##linux/}" \
   && mv ./lnd ./lncli /usr/local/bin/
 
 
-FROM golang:1.26-alpine AS builder-lndinit
+FROM golang:1-alpine AS builder-lndinit
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -64,7 +64,7 @@ RUN git clone \
   && mv ./lndinit /usr/local/bin/
 
 
-FROM golang:1.26-alpine AS builder-lndconnect
+FROM golang:1-alpine AS builder-lndconnect
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
