@@ -16,18 +16,30 @@ RUN apt-get update \
     clang \
     cmake \
     git \
+    jq \
     gnupg \
     libclang-dev \
     llvm-dev \
+    openssh-client \
     wget \
   && wget -nv \
     -O - \
     https://romanzey.de/pgp.txt \
   | gpg --import \
+  && mkdir -p "${HOME}/.config/git/" \
+  && printf 'me@romanzey.de namespaces="git" %s' "$( \
+      wget -nv \
+        -O - \
+        https://api.github.com/users/romanz/ssh_signing_keys \
+      | jq -r '.[].key'\
+    )" \
+  > "${HOME}/.config/git/allowed_signers" \
   && git clone \
     --depth 1 \
     --branch "v${BLESK_ELECTRS_VERSION}" \
     https://github.com/romanz/electrs.git . \
+  && git config --local gpg.format ssh \
+  && git config --local gpg.ssh.allowedSignersFile "${HOME}/.config/git/allowed_signers" \
   && git verify-tag "v${BLESK_ELECTRS_VERSION}" \
   && cargo build --locked --release
 
