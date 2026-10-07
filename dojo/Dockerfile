@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
 # hadolint ignore=DL3018
 RUN apk --no-cache upgrade \
@@ -37,7 +37,7 @@ RUN wget -nv \
   && npm install --no-audit --no-fund --no-update-notifier \
   && mv ./static/admin/conf/index-mainnet.js ./static/admin/conf/index.js
 
-FROM node:24-alpine AS runner
+FROM node:26-alpine AS runner
 
 ENV NODE_ENV=production
 
