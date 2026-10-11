@@ -87,6 +87,7 @@ protocol.wumbo-channels=true
 protocol.simple-taproot-chans=true
 
 [db]
+db.backend=sqlite
 
 [etcd]
 

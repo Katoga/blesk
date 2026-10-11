@@ -78,20 +78,35 @@ envsubst < "${BLESK_LND_HOME}/lnd.conf.template" > "${BLESK_LND_HOME}/.lnd/lnd.c
 chmod 0600 "${BLESK_LND_HOME}/.lnd/lnd.conf"
 export -n blesk_lnd_wallet_password_file
 
-lndinit init-wallet \
-  --file.seed="$blesk_lnd_seed_file" \
-  ${init_wallet_seed_passphrase_arg:-} \
-  --file.wallet-password="$blesk_lnd_wallet_password_file" \
-  --init-file.output-wallet-dir="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet" \
-  --init-file.validate-password
+if ! [[ -f "${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet/chain.sqlite" ]]; then
+  log_with_date "Starting temp LND"
+  lnd &
+  temp_pid="$!"
 
-log_with_date "Seed: '$(cat "$blesk_lnd_seed_file")'"
-shred -uz "$blesk_lnd_seed_file"
+  log_with_date "Initializing wallet"
+  lndinit init-wallet \
+    --init-type=rpc \
+    --init-rpc.tls-cert-path="${BLESK_LND_HOME}/.lnd"/tls.cert \
+    --file.seed="$blesk_lnd_seed_file" \
+    ${init_wallet_seed_passphrase_arg:-} \
+    --file.wallet-password="$blesk_lnd_wallet_password_file" \
+    --init-file.output-wallet-dir="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet" \
+    --init-file.validate-password
+
+  log_with_date "Seed: '$(cat "$blesk_lnd_seed_file")'"
+  shred -uz "$blesk_lnd_seed_file"
+
+  log_with_date "Stopping temp LND"
+  kill "$temp_pid"
+  wait "$temp_pid"
+fi
 
 (
   readonly channel_backup_file="${BLESK_LND_HOME}/.lnd/data/chain/bitcoin/mainnet/channel.backup"
   readonly scb_local_backup_dir="${BLESK_LND_SCB_BACKUP_DIR}"
   scb_backup "$channel_backup_file" "$scb_local_backup_dir"
 ) &
+
+log_with_date "Starting LND"
 
 exec lnd
