@@ -1,4 +1,4 @@
-FROM nginxinc/nginx-unprivileged:mainline-alpine AS runner
+FROM nginx/nginx-unprivileged:mainline-alpine AS runner
 
 USER root
 
